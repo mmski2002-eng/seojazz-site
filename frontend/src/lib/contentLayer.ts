@@ -49,7 +49,7 @@ export type ContentPackage = {
   articleSections: Array<{ heading?: string; items: string[] }>;
 };
 
-const CONTENT_DIR = path.resolve(process.cwd(), "..", "vibecode-seojazz", "04-kontent");
+const CONTENT_DIR = path.resolve(process.cwd(), "content", "04-kontent");
 
 function normalizeUrl(url: string) {
   if (!url || url === "/") {
