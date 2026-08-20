@@ -275,7 +275,11 @@ function handoffLinksToItems(links: HandoffLink[] = []) {
 
 function parseContentFile(fileName: string): ContentPackage | null {
   const sourceFile = `04-kontent/${fileName}`;
-  const markdown = fs.readFileSync(path.join(CONTENT_DIR, fileName), "utf8");
+  const filePath = path.join(CONTENT_DIR, fileName);
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  const markdown = fs.readFileSync(filePath, "utf8");
   const handoff = extractHandoff(markdown);
   const page = handoff?.stranicy?.[0];
 

@@ -128,7 +128,7 @@ export function Hero({
       <div className={`${styles.container} ${styles.heroGrid}`}>
         <div className={styles.heroContent}>
           {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
-          <h1>{title}</h1>
+          <h1>{renderTitleWithAccent(title)}</h1>
           {text && <p className={styles.heroText}>{text}</p>}
           <Actions actions={actions} />
           {metrics?.length ? <MetricsRow metrics={metrics} compact /> : null}
@@ -137,6 +137,33 @@ export function Hero({
       </div>
     </section>
   );
+}
+
+// Выделяет ключевое слово курсивным serif-акцентом (эмоция + иерархия).
+function renderTitleWithAccent(title: string) {
+  const accents = ["система", "систему", "заявок", "заявки", "выручку", "клиентов", "пациенты", "ключ"];
+  const parts = title.split(/(\s+)/);
+  let done = false;
+  return parts.map((part, i) => {
+    const bare = part.toLowerCase().replace(/[.,:;!?«»"]/g, "");
+    if (!done && accents.includes(bare)) {
+      done = true;
+      return (
+        <em
+          key={i}
+          style={{
+            fontFamily: "var(--font-serif)",
+            fontStyle: "italic",
+            fontWeight: 500,
+            color: "var(--color-brand-secondary)",
+          }}
+        >
+          {part}
+        </em>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
 }
 
 export function ArticleContent({
