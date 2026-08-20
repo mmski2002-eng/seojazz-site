@@ -2,6 +2,7 @@ import Link from "next/link";
 import { mainNav } from "@/lib/nav";
 import { contacts } from "@/lib/contacts";
 import Logo from "./Logo";
+import TelegramIcon from "./TelegramIcon";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -34,7 +35,7 @@ export default function Footer() {
           <p className={styles.colTitle}>Связаться</p>
           <div className={styles.contacts}>
             <a href={contacts.phoneHref}>{contacts.phoneDisplay}</a>
-            <a href={contacts.telegramHref}>{contacts.telegramHandle}</a>
+            <a href={contacts.telegramHref}><TelegramIcon />{contacts.telegramHandle}</a>
           </div>
         </div>
       </div>

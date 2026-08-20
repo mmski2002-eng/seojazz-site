@@ -5,6 +5,7 @@ import { useState } from "react";
 import { mainNav, uslugiMegaMenu } from "@/lib/nav";
 import { contacts } from "@/lib/contacts";
 import Logo from "./Logo";
+import TelegramIcon from "./TelegramIcon";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -86,7 +87,7 @@ export default function Header() {
             </Link>
           ))}
           <a href={contacts.phoneHref}>{contacts.phoneDisplay}</a>
-          <a href={contacts.telegramHref}>{contacts.telegramHandle}</a>
+          <a href={contacts.telegramHref}><TelegramIcon />{contacts.telegramHandle}</a>
         </div>
       )}
     </header>

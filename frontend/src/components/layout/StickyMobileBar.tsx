@@ -3,6 +3,7 @@
 
 import { contacts } from "@/lib/contacts";
 import Link from "next/link";
+import TelegramIcon from "./TelegramIcon";
 import styles from "./StickyMobileBar.module.css";
 
 export default function StickyMobileBar() {
@@ -12,7 +13,7 @@ export default function StickyMobileBar() {
         Позвонить
       </a>
       <a href={contacts.telegramHref} className={styles.item}>
-        Telegram
+        <TelegramIcon />Telegram
       </a>
       <Link href="/uslugi/" className={`${styles.item} ${styles.cta}`}>
         Заявка

@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { contacts } from "@/lib/contacts";
+import TelegramIcon from "../layout/TelegramIcon";
 import styles from "./Blocks.module.css";
 
 type Action = {
@@ -52,6 +53,7 @@ function Actions({ actions }: { actions?: Action[] }) {
           href={action.href}
           key={`${action.href}-${action.label}`}
         >
+          {action.href.includes("t.me") && <TelegramIcon />}
           {action.label}
         </a>
       ))}
@@ -399,7 +401,7 @@ export function LeadForm({ title = "Получить рекомендации" }
             {contacts.phoneDisplay}
           </a>
           <a href={contacts.telegramHref} onClick={() => trackEvent("click_telegram")} data-testid="lead-telegram-link">
-            Telegram {contacts.telegramHandle}
+            <TelegramIcon />Telegram {contacts.telegramHandle}
           </a>
           <p>Ответим в рабочее время: телефон или Telegram — как удобно.</p>
         </div>
