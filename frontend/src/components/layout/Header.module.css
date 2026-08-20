@@ -16,7 +16,7 @@
   padding: 14px var(--container-padding, 24px);
   display: flex;
   align-items: center;
-  gap: var(--space-4, 16px);
+  gap: 12px;
 }
 
 .logo {
@@ -42,6 +42,7 @@
   gap: 0;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .navItemWithMenu {
@@ -52,9 +53,9 @@
   position: relative;
   color: var(--color-text, #1a1a1a);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
-  padding: 8px 10px;
+  padding: 7px 8px;
   border-radius: 999px;
   display: inline-block;
   white-space: nowrap;
@@ -64,8 +65,8 @@
 .navLink::after {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
+  left: 8px;
+  right: 8px;
   bottom: 2px;
   height: 2px;
   background: var(--color-info);
@@ -148,13 +149,14 @@
 .contacts {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
+  flex: none;
 }
 
 .phone {
   color: var(--color-text, #1a1a1a);
   text-decoration: none;
-  font-size: 14.5px;
+  font-size: 13.5px;
   font-weight: 600;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -169,14 +171,14 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--color-brand);
   color: var(--color-text-inverse);
   text-decoration: none;
   font-weight: 600;
-  font-size: var(--font-size-sm, 14px);
+  font-size: 13.5px;
   line-height: 1;
-  padding: 12px 18px;
+  padding: 10px 14px;
   border-radius: 999px;
   white-space: nowrap;
   box-shadow: 0 4px 14px rgb(27 42 74 / 0.18);
@@ -226,7 +228,7 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1279px) {
   .nav,
   .contacts {
     display: none;
