@@ -15,14 +15,14 @@ const manrope = Manrope({
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600"],
   style: ["italic"],
   display: "swap",

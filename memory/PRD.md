@@ -1,38 +1,34 @@
-# SEO Jazz — Modernization PRD
+# SEO Jazz — PRD
 
 ## Original Problem
-"Изучи мой сайт https://github.com/mmski2002-eng/seojazz-site. Нужно его сделать более привлекательным и красивым, современным. Не меняя цветовую гамму."
-
-## User Choices
-- Стиль: Минималистичный с крупной типографикой и микроанимациями
-- Интерактив: Плавные анимации при скролле, hover-эффекты, микроинтеракции
-- Модернизация: Все разделы равномерно
-- Цветовая гамма: сохранена (navy #1b2a4a, cyan #00a6f6, amber #f6e120, green #70df54)
+Modernize seojazz-site (Next.js 16) without changing color palette.
 
 ## Architecture
-- Next.js 16 (App Router, RSC), React 19
-- FastAPI backend (`/app/backend`) — mock lead endpoint `/api/leads`
-- No DB; leads logged to stdout
+- Next.js 16 (App Router, RSC) в PROD mode (yarn start = next start)
+- FastAPI backend `/api/leads` mock endpoint
+- Real logo /public/seojazz-logo.svg via CSS mask
 
-## Implemented (Jan 2026)
-- New typography stack: Bricolage Grotesque (display) + Manrope (body) + Fraunces italic (accent)
-- Automatic serif italic accent word in H1
-- Frosted-glass sticky header with animated pill nav and mega-menu
-- Hero: floating gradient orbs, subtle grid mask, refined KPI dashboard with staggered bar animation
-- Cards: gradient border on hover, rotating icon badges, translate-lift, scroll-reveal fade-in
-- Pricing: pill segmented tabs, elevated featured card with amber ring
-- FAQ: rounded plus/minus toggles, animated open state
-- GEO orbit block: rotating conic gradient
-- Timeline: gradient rail behind step numbers
-- Footer: dark with radial glow, animated bullet dots, bottom bar
-- Global scroll-reveal (IntersectionObserver) on every section
-- Micro-animations respect prefers-reduced-motion
-- Sticky mobile bar preserved
-- Working `/api/leads` FastAPI endpoint
+## Session Log
+### 2026-01 — MVP модернизация
+- Bricolage Grotesque + Fraunces italic + Manrope типографика
+- Hero glass card, floating gradient orbs, KPI dashboard
+- Cards с gradient border на hover, scroll-reveal
+- Frosted-glass header, radar orbit block
+
+### 2026-01 — Итерация 2 (7 фиксов)
+1. Оригинальный логотип с seojazz.ru через CSS mask
+2. Nav underline на всю ширину слова (scaleX(1) на hover)
+3. Радар GEO/AI: круглый contour + не обрезанный conic-gradient beam
+4. Кейсы: 5 разных типов графиков (bars/thin/line/steps/gauge) через CaseChart
+5. Телефон в LeadForm: auto +7 при focus, formatPhone с маской, isPhoneValid валидация с error-текстом (native listeners on ref для React 19 + Turbopack)
+6. Пустые места заполнены: TeamAvatar SVG-силуэты, LeadMagnet SVG-иллюстрация
+7. FitDisqualify — зелёная/приглушённая панели с Check/X иконками
+
+### Инфра
+- Пришлось переключиться с `next dev` на PROD build (`next build && next start`), потому что Cloudflare WAF в preview окружении блокировал Turbopack dev chunks с pattern `_<hash>._.js` (403), из-за чего client hydration не запускался и `useEffect` не работал.
 
 ## Backlog
-- Real CRM/email integration for leads
+- Real CRM integration for leads (сейчас mock)
 - Individual case-study pages
-- Blog/insights section
 - Multi-language (EN)
-- Load real client logos strip
+- Blog/insights section

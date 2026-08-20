@@ -4,6 +4,7 @@ import {
   BarChart3,
   Bot,
   Building2,
+  Check,
   CircleDollarSign,
   FileSearch,
   LineChart,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   Sparkles,
   TrendingUp,
+  X as XIcon,
 } from "lucide-react";
 import styles from "./Blocks.module.css";
 
@@ -293,13 +295,43 @@ export function FitDisqualify({ fit, notFit }: { fit: TextItem[]; notFit: TextIt
   return (
     <Section title="Кому подходит">
       <div className={styles.split}>
-        <div className={styles.panel}>
-          <h3>Подходит</h3>
-          <Checklist items={fit} />
+        <div className={styles.fitPanel}>
+          <div className={styles.fitPanelHead}>
+            <span className={styles.fitBadge}>
+              <ShieldCheck aria-hidden="true" size={22} />
+            </span>
+            <h3>Подходит</h3>
+          </div>
+          <ul className={styles.fitList}>
+            {fit.map((item) => (
+              <li key={item.title}>
+                <Check aria-hidden="true" size={20} strokeWidth={2.5} />
+                <div>
+                  <strong>{item.title}</strong>
+                  {item.text && <span>{item.text}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className={styles.panelMuted}>
-          <h3>Не подходит</h3>
-          <Checklist items={notFit} />
+        <div className={styles.notFitPanel}>
+          <div className={styles.notFitPanelHead}>
+            <span className={styles.notFitBadge}>
+              <XIcon aria-hidden="true" size={22} />
+            </span>
+            <h3>Не подходит</h3>
+          </div>
+          <ul className={styles.notFitList}>
+            {notFit.map((item) => (
+              <li key={item.title}>
+                <XIcon aria-hidden="true" size={20} strokeWidth={2.5} />
+                <div>
+                  <strong>{item.title}</strong>
+                  {item.text && <span>{item.text}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </Section>
@@ -341,6 +373,119 @@ export function StepsTimeline({ steps }: { steps: TextItem[] }) {
 }
 
 
+// Разнообразные визуализации графиков для карточек кейсов.
+// Каждый кейс получает уникальный паттерн: столбцы разной формы, линия роста, площадь.
+function CaseChart({ variant, index }: { variant: number; index: number }) {
+  const seed = (index * 13 + variant * 7) % 100;
+  // 5 разных стилей: bars, ascending-bars, line, area, mixed-with-line
+  const style = variant % 5;
+
+  // Помощник — псевдо-случайные высоты, стабильные для варианта
+  const heights = Array.from({ length: 6 }, (_, i) => {
+    const base = 25 + ((seed + i * 17) % 55);
+    // всегда растущий тренд, чтобы кейс выглядел «до/после»
+    return Math.min(96, Math.round(base * (0.55 + i * 0.11)));
+  });
+
+  if (style === 0) {
+    // Классические столбцы
+    return (
+      <div className={styles.caseVisual} aria-hidden="true">
+        {heights.map((h, i) => (
+          <span key={i} style={{ height: `${h}%` }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (style === 1) {
+    // Тонкие вертикальные полоски
+    return (
+      <div className={`${styles.caseVisual} ${styles.caseVisualThin}`} aria-hidden="true">
+        {[...heights, ...heights.slice(0, 4)].map((h, i) => (
+          <span key={i} style={{ height: `${Math.max(10, h - 10)}%` }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (style === 2) {
+    // SVG линия роста
+    const w = 260;
+    const hh = 100;
+    const points = heights
+      .map((h, i) => {
+        const x = (i / (heights.length - 1)) * w;
+        const y = hh - (h / 100) * hh;
+        return `${x},${y}`;
+      })
+      .join(" ");
+    return (
+      <div className={`${styles.caseVisual} ${styles.caseVisualLine}`} aria-hidden="true">
+        <svg viewBox={`0 0 ${w} ${hh}`} preserveAspectRatio="none" width="100%" height="100%">
+          <defs>
+            <linearGradient id={`ln-${index}`} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-info)" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="var(--color-info)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <polygon points={`0,${hh} ${points} ${w},${hh}`} fill={`url(#ln-${index})`} />
+          <polyline points={points} fill="none" stroke="var(--color-info)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {heights.map((h, i) => {
+            const x = (i / (heights.length - 1)) * w;
+            const y = hh - (h / 100) * hh;
+            return <circle key={i} cx={x} cy={y} r="3" fill="var(--color-success)" />;
+          })}
+        </svg>
+      </div>
+    );
+  }
+
+  if (style === 3) {
+    // Ступени
+    return (
+      <div className={`${styles.caseVisual} ${styles.caseVisualSteps}`} aria-hidden="true">
+        {heights.map((h, i) => (
+          <span key={i} style={{ height: `${h}%`, animationDelay: `${i * 60}ms` }} />
+        ))}
+      </div>
+    );
+  }
+
+  // style === 4: donut/gauge SVG
+  const percentage = 40 + (seed % 45);
+  const r = 42;
+  const c = 2 * Math.PI * r;
+  const dash = (percentage / 100) * c;
+  return (
+    <div className={`${styles.caseVisual} ${styles.caseVisualGauge}`} aria-hidden="true">
+      <svg viewBox="0 0 120 120" width="100%" height="100%">
+        <defs>
+          <linearGradient id={`gg-${index}`} x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-info)" />
+            <stop offset="100%" stopColor="var(--color-success)" />
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r={r} fill="none" stroke="var(--color-border)" strokeWidth="8" />
+        <circle
+          cx="60"
+          cy="60"
+          r={r}
+          fill="none"
+          stroke={`url(#gg-${index})`}
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${c}`}
+          transform="rotate(-90 60 60)"
+        />
+        <text x="60" y="66" textAnchor="middle" fontFamily="var(--font-display)" fontWeight="700" fontSize="24" fill="var(--color-brand)">
+          {percentage}%
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export function CaseCardsAB({
   cases,
 }: {
@@ -349,16 +494,11 @@ export function CaseCardsAB({
   return (
     <Section title="Кейсы A→B">
       <div className={styles.scrollRow}>
-        {cases.map((item) => {
+        {cases.map((item, index) => {
           const content = (
             <>
               <h3>{item.title}</h3>
-              <div className={styles.caseVisual} aria-hidden="true">
-                <span style={{ height: "28%" }} />
-                <span style={{ height: "44%" }} />
-                <span style={{ height: "64%" }} />
-                <span style={{ height: "88%" }} />
-              </div>
+              <CaseChart variant={index} index={index} />
               <div className={styles.beforeAfter}>
                 <span>{item.before}</span>
                 <strong>{item.after}</strong>
@@ -386,9 +526,9 @@ export function Team({ people }: { people: Array<{ name: string; role: string; t
   return (
     <Section title="Команда и экспертиза">
       <div className={styles.grid}>
-        {people.map((person) => (
+        {people.map((person, index) => (
           <article className={styles.card} key={person.name}>
-            <div className={styles.avatar}>{person.name.slice(0, 1)}</div>
+            <TeamAvatar name={person.name} index={index} />
             <h3>{person.name}</h3>
             <p className={styles.muted}>{person.role}</p>
             {person.text && <p>{person.text}</p>}
@@ -396,6 +536,40 @@ export function Team({ people }: { people: Array<{ name: string; role: string; t
         ))}
       </div>
     </Section>
+  );
+}
+
+// Декоративный аватар — SVG-иллюстрация человека в стиле сайта, с градиентом бренда.
+function TeamAvatar({ name, index }: { name: string; index: number }) {
+  const palettes = [
+    { bg: "var(--color-info)", accent: "var(--color-accent)" },
+    { bg: "var(--color-brand)", accent: "var(--color-success)" },
+    { bg: "var(--color-success)", accent: "var(--color-accent)" },
+    { bg: "var(--color-brand-secondary)", accent: "var(--color-info)" },
+  ];
+  const p = palettes[index % palettes.length];
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("");
+
+  return (
+    <div className={styles.teamAvatar} aria-hidden="true">
+      <svg viewBox="0 0 80 80" width="72" height="72">
+        <defs>
+          <linearGradient id={`ta-${index}`} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={p.bg} stopOpacity="0.95" />
+            <stop offset="100%" stopColor={p.bg} stopOpacity="0.7" />
+          </linearGradient>
+        </defs>
+        <rect width="80" height="80" rx="40" fill={`url(#ta-${index})`} />
+        <circle cx="40" cy="32" r="12" fill="rgba(255,255,255,0.92)" />
+        <path d="M20 66 C 20 52, 60 52, 60 66 Z" fill="rgba(255,255,255,0.92)" />
+        <circle cx="62" cy="18" r="8" fill={p.accent} />
+      </svg>
+      <span className={styles.teamAvatarInitials}>{initials}</span>
+    </div>
   );
 }
 
@@ -521,10 +695,35 @@ export function LeadMagnet({ title, text, action }: { title: string; text: strin
     <Section>
       <div className={styles.leadMagnet}>
         <div>
+          <p className={styles.eyebrow}>Лид-магнит</p>
           <h2>{title}</h2>
           <p>{text}</p>
         </div>
-        <Actions actions={[action]} />
+        <div className={styles.leadMagnetVisual} aria-hidden="true">
+          <svg viewBox="0 0 220 180" width="100%" height="100%">
+            <defs>
+              <linearGradient id="lm-bg" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stopColor="var(--color-info)" stopOpacity="0.16" />
+                <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0.18" />
+              </linearGradient>
+            </defs>
+            <rect x="18" y="14" width="140" height="152" rx="14" fill="rgb(255 255 255)" stroke="var(--color-border)" />
+            <rect x="34" y="34" width="88" height="10" rx="5" fill="var(--color-brand)" opacity="0.85" />
+            <rect x="34" y="52" width="108" height="6" rx="3" fill="var(--color-border-strong)" />
+            <rect x="34" y="64" width="88" height="6" rx="3" fill="var(--color-border-strong)" />
+            <rect x="34" y="86" width="108" height="52" rx="8" fill="url(#lm-bg)" />
+            <polyline points="42,132 62,110 82,120 102,96 122,104 140,86" fill="none" stroke="var(--color-info)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="140" cy="86" r="3.5" fill="var(--color-success)" />
+            <rect x="34" y="146" width="60" height="8" rx="4" fill="var(--color-accent)" />
+            <g transform="translate(150 90)">
+              <circle r="34" fill="var(--color-accent)" />
+              <path d="M -10 0 L -2 10 L 12 -8" stroke="var(--color-brand)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </g>
+          </svg>
+        </div>
+        <div className={styles.leadMagnetAction}>
+          <Actions actions={[action]} />
+        </div>
       </div>
     </Section>
   );

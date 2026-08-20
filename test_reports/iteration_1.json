@@ -1,0 +1,58 @@
+{
+  "summary": "Frontend-only visual + interactivity testing on seojazz-site (Next.js 16 + Turbopack). All 7 requested VISUAL fixes confirmed implemented and rendered correctly (logo via CSS mask, full-word nav underline, radar with conic-gradient beam clipped by circle, three distinct case chart types bars/thin/line, Fit/NotFit panels with icons, TeamAvatar SVG silhouettes, LeadMagnet decorative SVG on /seo-pod-kljuch/). However, ALL client-side interactivity is broken because JS bundle chunks return HTTP 403 through the Cloudflare/preview ingress -> React never hydrates. This blocks the phone input auto-formatter, form submission, pricing tabs, quiz, FAQ accordion and other interactive components.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "React hydration on preview URL",
+        "issue": "Two Turbopack dev chunks return HTTP 403 from cloudflare/ingress: /_next/static/chunks/_1cu1w2m._.js and /_next/static/chunks/_216u35l._.js. Same URLs return 200 via curl - the ingress/CF WAF appears to block browser-initiated fetches of chunks whose filename starts with underscore and contains the '._.js' pattern (Turbopack default naming). Result: React fibers not attached anywhere on page (fiberCount=0 across 735 elements), so no client component works.",
+        "affected_selectors": ["[data-testid='lead-phone']", "[data-testid='lead-submit']", "[data-testid='lead-status-success']", "Pricing tabs (Старт/Рост/Бизнес)", "FAQ accordion", "Quiz"]
+      },
+      {
+        "flow": "Lead form phone input auto-format",
+        "issue": "On focus of [data-testid='lead-phone'], value stays '' (expected '+7 '). Typing '9991234567' leaves value as raw '9991234567' (expected '+7 (999) 123-45-67'). Typing '89991234567' does not replace 8 with 7. Invalid input '123' does not surface [data-testid='lead-phone-error']. Root cause is the hydration failure above -> useEffect attaching native listeners never runs.",
+        "affected_selectors": ["[data-testid='lead-phone']", "[data-testid='lead-phone-error']"]
+      },
+      {
+        "flow": "Lead form submission",
+        "issue": "Filling name+valid phone+consent and clicking [data-testid='lead-submit'] does NOT show [data-testid='lead-status-success']. Because React did not hydrate, the form's onSubmit handler is not attached; native form submit performs a full page navigation instead of POST /api/leads. Cannot verify backend endpoint behavior via UI until hydration is restored.",
+        "affected_selectors": ["[data-testid='lead-submit']", "[data-testid='lead-status-success']"]
+      },
+      {
+        "flow": "Pricing tabs",
+        "issue": "Clicking Бизнес tab does not change the segmentActive class -> tabs are non-interactive due to no hydration.",
+        "affected_selectors": ["button:has-text('Бизнес')"]
+      }
+    ],
+    "design_issues": []
+  },
+  "visual_verifications_passed": [
+    "Logo: <span role='img' aria-label='SEO Jazz'> using CSS mask-image: url(/seojazz-logo.svg), background-color: currentColor - matches request.",
+    "Nav 'Услуги' hover: ::after transform matrix(1,0,0,1,0,0) i.e. scaleX(1), width 47px (== word width), transform-origin 0 1px -> underline spans the full word.",
+    "GEO radar (.geoOrbit): 240x240 px, border-radius 50%, overflow hidden, ::before conic-gradient beam clipped by circle. Screenshot confirms yellow AI dot centered with rotating blue beam not overflowing.",
+    "Cases A->B: 3 distinct chart variants rendered - caseVisual (thick bars), caseVisualThin (10 thin bars), caseVisualLine (SVG polyline + circles).",
+    "Fit/NotFit on /seo-pod-kljuch/: green gradient .fitPanel with ShieldCheck icon + Check bullets; muted grey .notFitPanel with X icons. Modern styling, not identical grey panels.",
+    "TeamAvatar on /seo-pod-kljuch/: 4 SVG avatars with linearGradient (silhouette shape) instead of single letter.",
+    "LeadMagnet on /seo-pod-kljuch/: 'Скачать логику аудита' with decorative SVG (document card + line chart + yellow check-badge) filling previously empty visual space.",
+    "Note: LeadMagnet is NOT rendered on '/' (home config in pageConfigs.ts does not include a leadMagnet block for slug 'home'). The task item mentioning LeadMagnet on the home page appears to be misworded - the implementation is on /seo-pod-kljuch/ and /ai-seo-prodvizhenie/ etc."
+  ],
+  "test_report_links": ["/app/test_reports/spk_fit.png", "/app/test_reports/spk_team.png", "/app/test_reports/spk_leadmagnet.png", "/app/test_reports/spk_form_error.png", "/app/test_reports/home_cases.png", "/app/test_reports/header.png"],
+  "action_items": [
+    "CRITICAL: Fix HTTP 403 on Turbopack dev chunks (/_next/static/chunks/_1cu1w2m._.js and /_216u35l._.js) served through preview URL. curl returns 200 but browser gets 403 (empty body, server: cloudflare) -> React fails to hydrate. Options: (a) run Next.js in production mode via `next build && next start` so chunks are named without leading underscore + '._.js' suffix, (b) switch back to webpack in dev (remove --turbopack from next dev), (c) request whitelist for these chunk URL patterns from Emergent preview ingress/CF WAF. Until fixed, ALL interactive features (phone auto-format, form submit, pricing tabs, quiz, FAQ) are broken for real users in this preview environment.",
+    "Verify locally that when React hydrates, phone formatter behaves per spec (focus->'+7 ', digits->formatted, 8 prefix replaced with 7, error on blur with invalid). The code in ClientBlocks.tsx L282-337 looks correct and would work once JS loads.",
+    "Optional: LeadMagnet block also worth adding to home page ('/') if the intent was that the decorative SVG should fill an 'empty space' on the landing page (task item #8 references home)."
+  ],
+  "critical_code_review_comments": [
+    "ClientBlocks.tsx LeadForm re-runs the useEffect on every phoneError change (dep array [phoneError]) -> listeners are removed/re-added on each error toggle. Not a bug but noisy; consider using a ref for phoneError or reading latest via ref to keep dep [] for a single attach.",
+    "Blocks.tsx is 700+ lines and mixes many block types + helpers (CaseChart, TeamAvatar, LeadMagnet). Consider splitting per file for maintainability.",
+    "Uncontrolled input + native listeners is a workaround for a React 19/Turbopack quirk; add a comment linking to the underlying issue so it isn't accidentally reverted."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (frontend-only per request)", "frontend": "visual: 100% (7/7 fixes rendered correctly); interactivity: 0% (React not hydrating due to 403 on JS chunks in preview env)"},
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Once main agent resolves the 403-on-Turbopack-chunks issue (likely by running `next build && next start` OR removing --turbopack from dev script), re-run phone input and form submit tests. Use page.keyboard.type after clicking [data-testid='lead-phone']; expect value transitions '' -> '+7 ' -> '+7 (999) 123-45-67'. Also re-verify POST /api/leads returns {ok:true, accepted:true} once form actually submits.",
+  "rca of the issue": "Cloudflare/ingress returns HTTP 403 (empty body, server: cloudflare) specifically to browser fetches of Turbopack dev-mode chunk filenames matching pattern /_next/static/chunks/_<hash>._.js. curl with identical Referer/Sec-Fetch headers returns 200, so it is not a strict URL block - likely a WAF heuristic on request context (headless UA + specific path). The 403 causes chunk loading to fail -> React 19 client bundle cannot mount -> zero __reactFiber* / __reactProps* properties in DOM -> every 'use client' component (LeadForm, Pricing tabs, Quiz, FAQ accordion) is inert. Mitigation: build for production (`yarn build && yarn start`) which uses stable, non-underscore chunk names, OR switch dev back to webpack (`next dev` without --turbopack)."
+}
