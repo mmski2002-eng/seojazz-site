@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeadForm } from "@/components/blocks";
 
 export default function NotFound() {
   return (
@@ -46,6 +47,7 @@ export default function NotFound() {
           Все услуги
         </Link>
       </div>
+      <LeadForm title="Не нашли нужную страницу? Оставьте заявку" />
     </div>
   );
 }

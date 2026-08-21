@@ -1,4 +1,5 @@
 import { ActionConfig, MetricConfig, TextItemConfig } from "./pageConfig";
+import { PageGroup } from "./pageGroup";
 
 // Общие данные для demo-конфигов (pageConfigs.ts) и авто-сгенерированных
 // страниц контентного слоя (contentLayer.ts) — единый источник, без дублей.
@@ -8,6 +9,51 @@ export const cta: ActionConfig[] = [
   { label: "Получить рекомендации", href: "#lead", variant: "primary" },
   { label: "Написать в Telegram", href: "https://t.me/IldarNev", variant: "secondary" },
 ];
+
+const telegramAction: ActionConfig = { label: "Написать в Telegram", href: "https://t.me/IldarNev", variant: "secondary" };
+
+// Дифференциация hero-CTA и лид-формы по типу страницы (ТЗ §11: «Рассчитать
+// стоимость» форматы · «Проверить видимость бесплатно» GEO · «Бесплатный
+// аудит присутствия» площадки · «Обсудить проект» создание сайтов).
+export type LeadFormVariant = "default" | "geo-audit" | "seo-audit" | "platform-audit";
+
+export type PageGroupContent = {
+  cta: ActionConfig[];
+  leadFormVariant: LeadFormVariant;
+  leadFormTitle: string;
+};
+
+export const pageGroupContent: Record<PageGroup, PageGroupContent> = {
+  home: { cta, leadFormVariant: "default", leadFormTitle: "Получить рекомендации" },
+  formats: {
+    cta: [{ label: "Рассчитать стоимость", href: "#lead", variant: "primary" }, telegramAction],
+    leadFormVariant: "seo-audit",
+    leadFormTitle: "Рассчитать стоимость услуги",
+  },
+  geo: {
+    cta: [{ label: "Проверить видимость бесплатно", href: "#lead", variant: "primary" }, telegramAction],
+    leadFormVariant: "geo-audit",
+    leadFormTitle: "Проверить видимость в нейросетях",
+  },
+  platform: {
+    cta: [{ label: "Бесплатный аудит присутствия", href: "#lead", variant: "primary" }, telegramAction],
+    leadFormVariant: "platform-audit",
+    leadFormTitle: "Аудит присутствия на площадках",
+  },
+  creation: {
+    cta: [{ label: "Обсудить проект", href: "#lead", variant: "primary" }, telegramAction],
+    leadFormVariant: "default",
+    leadFormTitle: "Обсудить проект",
+  },
+  commercial: {
+    cta,
+    leadFormVariant: "seo-audit",
+    leadFormTitle: "Бесплатный аудит и прогноз",
+  },
+};
+
+export const postCasesAction: ActionConfig = { label: "Хочу такие результаты", href: "#lead", variant: "primary" };
+export const postFaqAction: ActionConfig = { label: "Задать вопрос эксперту", href: "#lead", variant: "secondary" };
 
 export const trustMetrics: MetricConfig[] = [
   { value: "107 650", label: "заявок за прошлый год", note: "Яндекс + Google" },

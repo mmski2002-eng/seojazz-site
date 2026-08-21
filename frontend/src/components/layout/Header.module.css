@@ -89,14 +89,20 @@
   top: 100%;
   left: 0;
   display: flex;
-  gap: 32px;
+  flex-wrap: wrap;
+  gap: 28px 32px;
   background: var(--color-bg, #fff);
   border: 1px solid var(--color-border, #e5e7eb);
   border-radius: var(--radius-lg, 18px);
   padding: 32px 24px 22px;
   box-shadow: var(--shadow-raised);
-  min-width: 640px;
+  width: 640px;
+  max-width: calc(100vw - 48px);
   animation: fadeInDown 240ms var(--ease-out) both;
+}
+
+.megaCluster {
+  flex: 1 1 160px;
 }
 
 @keyframes fadeInDown {
@@ -164,6 +170,72 @@
 
 .phone:hover {
   color: var(--color-info);
+}
+
+.callbackWrap {
+  position: relative;
+}
+
+.callbackTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 999px;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+
+.callbackTrigger:hover {
+  color: var(--color-brand, #1b2a4a);
+  border-color: var(--color-info);
+}
+
+.callbackPopover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  background: var(--color-bg, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-raised);
+  padding: 16px;
+  z-index: var(--z-header, 50);
+  animation: fadeInDown 200ms var(--ease-out) both;
+}
+
+.callbackTitle {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-brand, #1b2a4a);
+}
+
+.mobileCallbackTrigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-text, #1a1a1a);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 0;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+}
+
+.mobileCallbackBody {
+  padding: 4px 0 10px;
 }
 
 .cta {
@@ -245,9 +317,17 @@
     padding: var(--space-4, 16px) var(--container-padding, 20px) var(--space-6, 24px);
     border-top: 1px solid var(--color-border, #e5e7eb);
     animation: fadeInDown 240ms var(--ease-out) both;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-bg, #fff);
+    overflow-y: auto;
+    z-index: var(--z-header, 50);
   }
 
-  .mobileMenu a {
+  .mobileMenu > a {
     color: var(--color-text, #1a1a1a);
     text-decoration: none;
     font-size: 16px;
@@ -255,7 +335,56 @@
     border-bottom: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
   }
 
-  .mobileMenu a:last-child {
+  .mobileMenu > a:last-child {
     border-bottom: 0;
+  }
+
+  .mobileAccordionGroup {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  }
+
+  .mobileAccordionTrigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: none;
+    border: none;
+    color: var(--color-text, #1a1a1a);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 0 4px;
+    cursor: pointer;
+  }
+
+  .mobileAccordionAllLink {
+    display: inline-block;
+    color: var(--color-text-secondary, #6b7280);
+    text-decoration: none;
+    font-size: 13px;
+    padding-bottom: 10px;
+  }
+
+  .mobileAccordionBody {
+    display: grid;
+    gap: var(--space-4, 16px);
+    padding-bottom: var(--space-3, 12px);
+  }
+
+  .mobileCluster p {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary, #6b7280);
+    font-weight: 700;
+  }
+
+  .mobileCluster a {
+    display: block;
+    color: var(--color-text, #1a1a1a);
+    text-decoration: none;
+    font-size: 15px;
+    padding: 6px 0;
   }
 }

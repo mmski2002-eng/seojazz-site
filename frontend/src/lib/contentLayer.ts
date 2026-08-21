@@ -2,7 +2,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { BlockConfig, LinkItemConfig, PageConfig, TextItemConfig } from "./pageConfig";
 import { getLaunchPriority } from "./contentPriority";
-import { cta as leadActions, geoBlock, guaranteesItems, pickThematicCases, pricing3, trustMetrics } from "./sharedContent";
+import { getPageGroup } from "./pageGroup";
+import {
+  geoBlock,
+  guaranteesItems,
+  pageGroupContent,
+  pickThematicCases,
+  postCasesAction,
+  postFaqAction,
+  pricing3,
+  trustMetrics,
+} from "./sharedContent";
 
 type HandoffLink = {
   kuda?: string;
@@ -361,13 +371,14 @@ function contentProvenanceBlock(content: ContentPackage): BlockConfig {
 function contentToPageConfig(content: ContentPackage): PageConfig {
   const title = content.page.meta?.title ?? content.page.meta?.h1 ?? content.url;
   const h1 = content.page.meta?.h1 ?? title;
+  const group = pageGroupContent[getPageGroup(content.url)];
   const blocks: BlockConfig[] = [
     {
       type: "hero",
       eyebrow: content.page.tip_stranicy,
       title: h1,
       text: content.heroText,
-      actions: leadActions,
+      actions: group.cta,
     },
     contentProvenanceBlock(content),
   ];
@@ -390,7 +401,7 @@ function contentToPageConfig(content: ContentPackage): PageConfig {
   // Обязательные блоки мастер-шаблона (00-svodka-master-shablon.md §2: Прайс,
   // Кейсы, Доверие/счётчики, Гарантии, GEO/AI — ✅ на каждой коммерческой странице).
   blocks.push({ type: "pricing", tiers: pricing3 });
-  blocks.push({ type: "cases", cases: pickThematicCases(content.url) });
+  blocks.push({ type: "cases", cases: pickThematicCases(content.url), action: postCasesAction });
   blocks.push({ type: "counters", metrics: trustMetrics });
   blocks.push({ type: "guarantees", items: guaranteesItems });
 
@@ -406,11 +417,12 @@ function contentToPageConfig(content: ContentPackage): PageConfig {
     blocks.push({
       type: "faq",
       items: content.faq,
+      action: postFaqAction,
     });
   }
 
   blocks.push(geoBlock);
-  blocks.push({ type: "leadForm", title: "Получить рекомендации" });
+  blocks.push({ type: "leadForm", title: group.leadFormTitle, variant: group.leadFormVariant });
 
   return {
     slug: content.url.replace(/^\/|\/$/g, ""),

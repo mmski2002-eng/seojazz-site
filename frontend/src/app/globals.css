@@ -5,8 +5,8 @@
   --brand-navy: #1b2a4a;
   --brand-slate: #33415c;
   --brand-cyan: #00a6f6;
-  --brand-amber: #f6e120;
-  --brand-green: #70df54;
+  --brand-amber: #F5A623;
+  --brand-green: #2FB37A;
   --brand-pink: #ff679f;
 
   --neutral-0: #ffffff;
@@ -15,7 +15,7 @@
   --neutral-150: #f3f8ff;
   --neutral-200: #e7ebef;
   --neutral-300: #cedbef;
-  --neutral-500: #7890b3;
+  --neutral-500: #6b7280;
   --neutral-700: #374151;
   --neutral-900: #1a1a1a;
 
@@ -94,8 +94,8 @@
   --radius-xl: 32px;
   --shadow-soft: 0 8px 24px rgb(27 42 74 / 0.06), 0 2px 6px rgb(27 42 74 / 0.04);
   --shadow-raised: 0 22px 60px rgb(27 42 74 / 0.12), 0 6px 18px rgb(27 42 74 / 0.06);
-  --shadow-glow: 0 30px 80px rgb(0 166 246 / 0.18), 0 8px 24px rgb(246 225 32 / 0.12);
-  --shadow-cta: 0 14px 34px rgb(246 225 32 / 0.42), 0 3px 8px rgb(27 42 74 / 0.08);
+  --shadow-glow: 0 30px 80px rgb(0 166 246 / 0.18), 0 8px 24px rgb(245 166 35 / 0.12);
+  --shadow-cta: 0 14px 34px rgb(245 166 35 / 0.42), 0 3px 8px rgb(27 42 74 / 0.08);
   --z-header: 50;
   --z-sticky-mobile: 60;
 
@@ -133,7 +133,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-image:
     radial-gradient(1200px 600px at 90% -10%, rgb(0 166 246 / 0.05), transparent 60%),
-    radial-gradient(900px 500px at -10% 120%, rgb(246 225 32 / 0.06), transparent 60%);
+    radial-gradient(900px 500px at -10% 120%, rgb(245 166 35 / 0.06), transparent 60%);
 }
 
 main {

@@ -67,6 +67,14 @@ export const uslugiMegaMenu: NavCluster[] = [
       { label: "Все площадки", href: "/prodvizhenie-na-ploshhadkah/", built: true },
     ],
   },
+  {
+    title: "Аудиты",
+    links: [
+      { label: "SEO-аудит", href: "/seo-audit-sajta/", built: true },
+      { label: "Технический аудит", href: "/tehnicheskij-audit-sajta/", built: true },
+      { label: "Коммерческий аудит", href: "/kommercheskij-audit-sajta/", built: true },
+    ],
+  },
 ];
 
 export const mainNav: NavLink[] = [
@@ -78,4 +86,5 @@ export const mainNav: NavLink[] = [
   { label: "Вопросы", href: "/voprosy/", built: true },
   { label: "Кейсы", href: "/cases/", built: true },
   { label: "Блог", href: "/blog/", built: true },
+  { label: "Контакты", href: "/contacts/", built: true },
 ];

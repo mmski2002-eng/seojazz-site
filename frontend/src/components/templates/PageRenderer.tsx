@@ -14,6 +14,7 @@ import {
   LeadForm,
   LeadMagnet,
   LinkMatrix,
+  MapsWidgets,
   PricingTiers,
   ProblemsGrid,
   ProvenByData,
@@ -71,7 +72,7 @@ function BlockRenderer({ block }: { block: BlockConfig }) {
     case "aiRating":
       return <AIRatingWidget title={block.title} items={block.items} />;
     case "cases":
-      return <CaseCardsAB cases={block.cases} />;
+      return <CaseCardsAB cases={block.cases} action={block.action} />;
     case "team":
       return <Team people={block.people} />;
     case "counters":
@@ -87,13 +88,15 @@ function BlockRenderer({ block }: { block: BlockConfig }) {
     case "comparison":
       return <ComparisonTable columns={block.columns} rows={block.rows} />;
     case "faq":
-      return <FAQAccordion items={block.items} />;
+      return <FAQAccordion items={block.items} action={block.action} />;
     case "geo":
       return <GeoAIBlock title={block.title} text={block.text} links={block.links} />;
     case "links":
       return <LinkMatrix title={block.title} links={block.links} />;
+    case "maps":
+      return <MapsWidgets title={block.title} intro={block.intro} />;
     case "leadForm":
-      return <LeadForm title={block.title} />;
+      return <LeadForm title={block.title} variant={block.variant} />;
     case "leadMagnet":
       return <LeadMagnet title={block.title} text={block.text} action={block.action} />;
   }

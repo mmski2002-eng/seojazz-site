@@ -206,6 +206,7 @@ export function getSitemapEntries(): MetadataRoute.Sitemap {
 
   urls.add("/cases/");
   urls.add("/tariffs/");
+  urls.add("/contacts/");
 
   return [...urls].sort().map((url) => ({
     url: absoluteUrl(url),

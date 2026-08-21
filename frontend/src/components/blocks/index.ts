@@ -11,6 +11,7 @@ export {
   Hero,
   LeadMagnet,
   LinkMatrix,
+  MapsWidgets,
   MetricsRow,
   ProblemsGrid,
   ProvenByData,
@@ -22,4 +23,4 @@ export {
   WhatIncluded,
 } from "./Blocks";
 
-export { Calculator, FAQAccordion, LeadForm, LeadQuiz, PricingTiers, Quiz } from "./ClientBlocks";
+export { Calculator, CallbackForm, FAQAccordion, FooterLeadForm, LeadForm, LeadQuiz, PricingTiers, Quiz } from "./ClientBlocks";

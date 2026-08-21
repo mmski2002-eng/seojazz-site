@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   BadgeCheck,
@@ -252,7 +253,13 @@ export function Quiz({
 
 export const LeadQuiz = Quiz;
 
-export function FAQAccordion({ items }: { items: Array<{ question: string; answer: string }> }) {
+export function FAQAccordion({
+  items,
+  action,
+}: {
+  items: Array<{ question: string; answer: string }>;
+  action?: Action;
+}) {
   const [open, setOpen] = useState(0);
 
   return (
@@ -273,35 +280,73 @@ export function FAQAccordion({ items }: { items: Array<{ question: string; answe
           </article>
         ))}
       </div>
+      {action && <Actions actions={[action]} />}
     </Section>
   );
 }
 
-export function LeadForm({ title = "Получить рекомендации" }: { title?: string }) {
+// Дифференциация лид-форм по типу страницы (ТЗ §11: GEO-аудит цитируемости,
+// бесплатный аудит/прогноз, аудит присутствия на площадках — раньше все типы
+// страниц получали один и тот же generic LeadForm без различий).
+type LeadFormVariant = "default" | "geo-audit" | "seo-audit" | "platform-audit";
+
+const LEAD_FORM_VARIANTS: Record<
+  LeadFormVariant,
+  { intro: string; successMessage: string; messageTag?: string }
+> = {
+  default: {
+    intro: "Ответим в рабочее время: телефон или Telegram — как удобно.",
+    successMessage: "Заявка отправлена. Свяжемся с вами в течение рабочего дня.",
+  },
+  "geo-audit": {
+    intro: "Проверим упоминания бренда в ответах ChatGPT, Claude, Gemini, Perplexity, YandexGPT и Google AI Overview.",
+    successMessage: "Заявка на проверку видимости принята. Пришлём результат и рекомендации в течение рабочего дня.",
+    messageTag: "GEO-аудит цитируемости",
+  },
+  "seo-audit": {
+    intro: "Посмотрим сайт, конкурентов и точки роста — пришлём аудит и прогноз заявок.",
+    successMessage: "Заявка на аудит принята. Пришлём аудит и прогноз заявок в течение рабочего дня.",
+    messageTag: "Бесплатный аудит/прогноз",
+  },
+  "platform-audit": {
+    intro: "Проверим карточки, отзывы и позиции на картах и площадках — пришлём аудит присутствия.",
+    successMessage: "Заявка на аудит присутствия принята. Ответим в течение рабочего дня.",
+    messageTag: "Аудит присутствия на площадках",
+  },
+};
+
+function formatPhone(raw: string): string {
+  let digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("8")) digits = "7" + digits.slice(1);
+  if (!digits.startsWith("7")) digits = "7" + digits;
+  digits = digits.slice(0, 11);
+  const rest = digits.slice(1);
+  let out = "+7";
+  if (rest.length > 0) out += ` (${rest.slice(0, 3)}`;
+  if (rest.length >= 3) out += `)`;
+  if (rest.length > 3) out += ` ${rest.slice(3, 6)}`;
+  if (rest.length > 6) out += `-${rest.slice(6, 8)}`;
+  if (rest.length > 8) out += `-${rest.slice(8, 10)}`;
+  return out;
+}
+
+function isPhoneValid(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 11 && digits.startsWith("7");
+}
+
+export function LeadForm({
+  title = "Получить рекомендации",
+  variant = "default",
+}: {
+  title?: string;
+  variant?: LeadFormVariant;
+}) {
   const [status, setStatus] = useState<"idle" | "error" | "loading" | "success">("idle");
   const [message, setMessage] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const phoneRef = useRef<HTMLInputElement>(null);
-
-  function formatPhone(raw: string): string {
-    let digits = raw.replace(/\D/g, "");
-    if (digits.startsWith("8")) digits = "7" + digits.slice(1);
-    if (!digits.startsWith("7")) digits = "7" + digits;
-    digits = digits.slice(0, 11);
-    const rest = digits.slice(1);
-    let out = "+7";
-    if (rest.length > 0) out += ` (${rest.slice(0, 3)}`;
-    if (rest.length >= 3) out += `)`;
-    if (rest.length > 3) out += ` ${rest.slice(3, 6)}`;
-    if (rest.length > 6) out += `-${rest.slice(6, 8)}`;
-    if (rest.length > 8) out += `-${rest.slice(8, 10)}`;
-    return out;
-  }
-
-  function isPhoneValid(value: string) {
-    const digits = value.replace(/\D/g, "");
-    return digits.length === 11 && digits.startsWith("7");
-  }
+  const variantConfig = LEAD_FORM_VARIANTS[variant];
 
   // Uncontrolled input + native listeners to bypass React 19 + Turbopack quirk
   useEffect(() => {
@@ -335,7 +380,6 @@ export function LeadForm({ title = "Получить рекомендации" }
       el.removeEventListener("input", onInput);
       el.removeEventListener("blur", onBlur);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phoneError]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -353,11 +397,15 @@ export function LeadForm({ title = "Получить рекомендации" }
       return;
     }
 
+    const rawMessage = String(form.get("message") ?? "").trim();
+
     const payload = {
       name: String(form.get("name") ?? "").trim(),
       phone,
       telegram,
-      message: String(form.get("message") ?? "").trim(),
+      message: variantConfig.messageTag
+        ? `[${variantConfig.messageTag}] ${rawMessage}`.trim()
+        : rawMessage,
       preferredChannel: String(form.get("preferredChannel") ?? "phone"),
       website: String(form.get("website") ?? "").trim(),
       consent: form.get("consent") === "on",
@@ -380,9 +428,9 @@ export function LeadForm({ title = "Получить рекомендации" }
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error("Lead submit failed");
-      trackEvent("submit_recommendations", { channel: payload.preferredChannel, page: payload.page });
+      trackEvent("submit_recommendations", { channel: payload.preferredChannel, page: payload.page, formVariant: variant });
       setStatus("success");
-      setMessage("Заявка отправлена. Свяжемся с вами в течение рабочего дня.");
+      setMessage(variantConfig.successMessage);
       formElement.reset();
       if (phoneRef.current) phoneRef.current.value = "";
     } catch {
@@ -403,7 +451,7 @@ export function LeadForm({ title = "Получить рекомендации" }
           <a href={contacts.telegramHref} onClick={() => trackEvent("click_telegram")} data-testid="lead-telegram-link">
             <TelegramIcon />Telegram {contacts.telegramHandle}
           </a>
-          <p>Ответим в рабочее время: телефон или Telegram — как удобно.</p>
+          <p>{variantConfig.intro}</p>
         </div>
 
         <form className={styles.form} onSubmit={submit} data-testid="lead-form">
@@ -456,7 +504,12 @@ export function LeadForm({ title = "Получить рекомендации" }
 
           <label className={styles.consent}>
             <input name="consent" required type="checkbox" data-testid="lead-consent" />
-            <span>Согласен на обработку данных для ответа на заявку</span>
+            <span>
+              Согласен на обработку данных для ответа на заявку —{" "}
+              <Link href="/privacy-policy/" target="_blank" rel="noopener noreferrer">
+                политика конфиденциальности
+              </Link>
+            </span>
           </label>
 
           <button
@@ -485,10 +538,214 @@ export function LeadForm({ title = "Получить рекомендации" }
   );
 }
 
-function trackEvent(name: string, payload?: Record<string, unknown>) {
+// Отдельная компактная форма обратного звонка (ТЗ §5/§6/§11: «Обратный
+// звонок» — телефон + время звонка, отдельно от общей заявки). Раньше в
+// шапке/sticky-панели был только прямой tel:-линк без формы.
+export function CallbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
+  const [status, setStatus] = useState<"idle" | "error" | "loading" | "success">("idle");
+  const [message, setMessage] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const phoneRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const el = phoneRef.current;
+    if (!el) return;
+
+    const onFocus = () => {
+      if (!el.value) el.value = "+7 ";
+    };
+    const onInput = () => {
+      const raw = el.value;
+      if (raw.trim() === "" || raw.trim() === "+") {
+        el.value = "";
+        setPhoneError("");
+        return;
+      }
+      el.value = formatPhone(raw);
+      if (phoneError) setPhoneError("");
+    };
+
+    el.addEventListener("focus", onFocus);
+    el.addEventListener("input", onInput);
+    return () => {
+      el.removeEventListener("focus", onFocus);
+      el.removeEventListener("input", onInput);
+    };
+  }, [phoneError]);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const phone = phoneRef.current?.value.trim() ?? "";
+    const consent = form.get("consent") === "on";
+
+    if (!phone || !isPhoneValid(phone)) {
+      setPhoneError("Введите телефон в формате +7 (999) 999-99-99");
+      setStatus("error");
+      setMessage("Проверьте номер телефона.");
+      return;
+    }
+    if (!consent) {
+      setStatus("error");
+      setMessage("Подтвердите согласие на обработку данных.");
+      return;
+    }
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "",
+          phone,
+          telegram: "",
+          message: "[Обратный звонок]",
+          preferredChannel: "phone",
+          website: "",
+          consent,
+          page: window.location.pathname,
+        }),
+      });
+      if (!response.ok) throw new Error("Callback submit failed");
+      trackEvent("submit_callback", { page: window.location.pathname });
+      setStatus("success");
+      setMessage("Перезвоним в течение 15 минут в рабочее время.");
+      formElement.reset();
+      if (phoneRef.current) phoneRef.current.value = "";
+      onSubmitted?.();
+    } catch {
+      setStatus("error");
+      setMessage("Не удалось отправить. Позвоните нам сами или напишите в Telegram.");
+    }
+  }
+
+  return (
+    <form className={styles.form} onSubmit={submit} data-testid="callback-form">
+      <label>
+        Телефон
+        <input
+          ref={phoneRef}
+          name="phone"
+          placeholder="+7 (___) ___-__-__"
+          autoComplete="tel"
+          inputMode="tel"
+          defaultValue=""
+          aria-invalid={phoneError ? "true" : "false"}
+          data-testid="callback-phone"
+        />
+        {phoneError && (
+          <small className={styles.error} data-testid="callback-phone-error">
+            {phoneError}
+          </small>
+        )}
+      </label>
+      <label className={styles.consent}>
+        <input name="consent" required type="checkbox" data-testid="callback-consent" />
+        <span>
+          Согласен на{" "}
+          <Link href="/privacy-policy/" target="_blank" rel="noopener noreferrer">
+            обработку данных
+          </Link>
+        </span>
+      </label>
+      <button className={styles.primaryAction} disabled={status === "loading"} type="submit" data-testid="callback-submit">
+        <Send aria-hidden="true" size={16} />
+        {status === "loading" ? "Отправляем" : "Перезвоните мне"}
+      </button>
+      {status === "error" && <p className={styles.error}>{message}</p>}
+      {status === "success" && <p className={styles.success}>{message}</p>}
+    </form>
+  );
+}
+
+export function FooterLeadForm() {
+  const [status, setStatus] = useState<"idle" | "error" | "loading" | "success">("idle");
+  const [message, setMessage] = useState("");
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const contact = String(form.get("contact") ?? "").trim();
+    const consent = form.get("consent") === "on";
+
+    if (!contact || !consent) {
+      setStatus("error");
+      setMessage("Укажите телефон или Telegram и подтвердите согласие.");
+      return;
+    }
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "",
+          phone: contact,
+          telegram: "",
+          message: "Короткая заявка из футера",
+          preferredChannel: "phone",
+          website: "",
+          consent,
+          page: window.location.pathname,
+        }),
+      });
+      if (!response.ok) throw new Error("Lead submit failed");
+      trackEvent("submit_footer_lead", { page: window.location.pathname });
+      setStatus("success");
+      setMessage("Заявка отправлена, свяжемся с вами.");
+      formElement.reset();
+    } catch {
+      setStatus("error");
+      setMessage("Не удалось отправить. Напишите в Telegram.");
+    }
+  }
+
+  return (
+    <form className={`${styles.form} ${styles.footerForm}`} onSubmit={submit} data-testid="footer-lead-form">
+      <label>
+        Короткая заявка
+        <input name="contact" placeholder="Телефон или Telegram" autoComplete="tel" data-testid="footer-lead-contact" />
+      </label>
+      <label className={styles.consent}>
+        <input name="consent" required type="checkbox" data-testid="footer-lead-consent" />
+        <span>
+          Согласен на{" "}
+          <Link href="/privacy-policy/" onClick={(event) => event.stopPropagation()}>
+            обработку данных
+          </Link>
+        </span>
+      </label>
+      <button className={styles.primaryAction} disabled={status === "loading"} type="submit" data-testid="footer-lead-submit">
+        <Send aria-hidden="true" size={16} />
+        {status === "loading" ? "Отправляем" : "Отправить"}
+      </button>
+      {status === "error" && <p className={styles.error}>{message}</p>}
+      {status === "success" && <p className={styles.success}>{message}</p>}
+    </form>
+  );
+}
+
+export function trackEvent(name: string, payload?: Record<string, unknown>) {
   const event = { event: name, ...(payload ?? {}) };
-  const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+  const analyticsWindow = window as Window & {
+    dataLayer?: Array<Record<string, unknown>>;
+    ym?: (counterId: number, action: string, goal: string, params?: Record<string, unknown>) => void;
+  };
   analyticsWindow.dataLayer?.push(event);
+
+  const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID);
+  if (analyticsWindow.ym && metrikaId) {
+    analyticsWindow.ym(metrikaId, "reachGoal", name, payload);
+  }
+
   if (!analyticsWindow.dataLayer) {
     console.info("[mock-analytics]", event);
   }

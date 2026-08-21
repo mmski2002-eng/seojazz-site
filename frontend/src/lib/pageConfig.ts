@@ -70,7 +70,11 @@ export type BlockConfig =
       title?: string;
       items: Array<{ brand: string; score: string; source: string; note?: string }>;
     }
-  | { type: "cases"; cases: Array<{ title: string; before: string; after: string; metric: string; href?: string }> }
+  | {
+      type: "cases";
+      cases: Array<{ title: string; before: string; after: string; metric: string; href?: string }>;
+      action?: ActionConfig;
+    }
   | { type: "team"; people: Array<{ name: string; role: string; text?: string }> }
   | { type: "counters"; metrics: MetricConfig[] }
   | { type: "awards"; items: TextItemConfig[] }
@@ -78,10 +82,11 @@ export type BlockConfig =
   | { type: "guarantees"; items: TextItemConfig[] }
   | { type: "proven"; items: TextItemConfig[] }
   | { type: "comparison"; columns: string[]; rows: Array<{ label: string; values: string[] }> }
-  | { type: "faq"; items: Array<{ question: string; answer: string }> }
+  | { type: "faq"; items: Array<{ question: string; answer: string }>; action?: ActionConfig }
   | { type: "geo"; title: string; text: string; links?: LinkItemConfig[] }
   | { type: "links"; title?: string; links: LinkItemConfig[] }
-  | { type: "leadForm"; title?: string }
+  | { type: "maps"; title?: string; intro?: string }
+  | { type: "leadForm"; title?: string; variant?: "default" | "geo-audit" | "seo-audit" | "platform-audit" }
   | { type: "leadMagnet"; title: string; text: string; action: ActionConfig };
 
 export type PageConfig = {

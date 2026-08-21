@@ -4,6 +4,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StickyMobileBar from "@/components/layout/StickyMobileBar";
 import ScrollReveal from "@/components/layout/ScrollReveal";
+import CookieConsent from "@/components/layout/CookieConsent";
+import YandexMetrika from "@/components/layout/YandexMetrika";
 import { siteUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -45,11 +47,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${manrope.variable} ${bricolage.variable} ${fraunces.variable}`}
     >
       <body>
+        <YandexMetrika />
         <Header />
         <main>{children}</main>
         <Footer />
         <StickyMobileBar />
         <ScrollReveal />
+        <CookieConsent />
       </body>
     </html>
   );

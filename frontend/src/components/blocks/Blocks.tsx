@@ -488,8 +488,10 @@ function CaseChart({ variant, index }: { variant: number; index: number }) {
 
 export function CaseCardsAB({
   cases,
+  action,
 }: {
   cases: Array<{ title: string; before: string; after: string; metric: string; href?: string }>;
+  action?: Action;
 }) {
   return (
     <Section title="Кейсы A→B">
@@ -518,6 +520,7 @@ export function CaseCardsAB({
           );
         })}
       </div>
+      {action && <Actions actions={[action]} />}
     </Section>
   );
 }
@@ -657,6 +660,55 @@ export function LinkMatrix({ title = "Связанные решения", links 
   return (
     <Section title={title} intro="Ссылки выводятся обычным HTML и собираются из матрицы handoff, чтобы посадочные усиливали друг друга.">
       <LinkList links={links} cards />
+    </Section>
+  );
+}
+
+export function MapsWidgets({
+  title = "Мы на картах",
+  intro = "Точный адрес офиса уточняется у заказчика — виджеты показывают зону обслуживания (Москва), не привязаны к вымышленному адресу.",
+}: {
+  title?: string;
+  intro?: string;
+}) {
+  return (
+    <Section title={title} intro={intro}>
+      <div className={styles.mapsGrid}>
+        <div className={styles.mapCard}>
+          <h3><MapPin aria-hidden="true" size={16} />Яндекс.Карты</h3>
+          <iframe
+            src="https://yandex.ru/map-widget/v1/?ll=37.618423%2C55.751244&z=10"
+            width="100%"
+            height="240"
+            frameBorder="0"
+            loading="lazy"
+            title="SEO Jazz на Яндекс.Картах — Москва"
+          />
+        </div>
+        <div className={styles.mapCard}>
+          <h3><MapPin aria-hidden="true" size={16} />Google Карты</h3>
+          <iframe
+            src="https://www.google.com/maps?q=Москва&output=embed"
+            width="100%"
+            height="240"
+            frameBorder="0"
+            loading="lazy"
+            title="SEO Jazz на Google Картах — Москва"
+          />
+        </div>
+        <div className={styles.mapCard}>
+          <h3><MapPin aria-hidden="true" size={16} />2ГИС</h3>
+          <p>Карточка компании на 2ГИС появится после подтверждения реквизитов заказчиком.</p>
+          <a
+            className={styles.secondaryAction}
+            href="https://2gis.ru/search/SEO%20Jazz"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Найти на 2ГИС
+          </a>
+        </div>
+      </div>
     </Section>
   );
 }
