@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ТЗ — сайт seojazz.ru (тестовое задание, вайб-код)</title>
+<style>
+  :root{
+    --brand:#1B2A4A; --brand2:#33415C; --accent:#F5A623; --success:#2FB37A;
+    --bg:#FFFFFF; --bg2:#F4F6FA; --text:#1A1A1A; --text2:#6B7280;
+    --border:#E2E6EE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text); background:var(--bg2); margin:0; line-height:1.55;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:32px 20px 120px;}
+  header.doc{
+    background:var(--brand); color:#fff; padding:36px 20px; margin-bottom:0;
+  }
+  header.doc .wrap{padding-top:0;padding-bottom:0;}
+  header.doc h1{margin:0 0 8px;font-size:28px;}
+  header.doc p{margin:4px 0;color:#cfd7ea;font-size:14px;}
+  .badge{display:inline-block;background:var(--accent);color:#1A1A1A;font-weight:600;
+    padding:3px 10px;border-radius:20px;font-size:12px;margin-right:8px;}
+  nav.toc{
+    background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:28px 0;
+  }
+  nav.toc h2{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);margin:0 0 10px;}
+  nav.toc ol{margin:0;padding-left:20px;columns:2;gap:24px;font-size:14px;}
+  nav.toc a{color:var(--brand);text-decoration:none;}
+  nav.toc a:hover{text-decoration:underline;}
+  section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px 30px;margin-bottom:20px;}
+  h2{color:var(--brand);font-size:21px;border-bottom:2px solid var(--accent);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--brand2);font-size:16px;margin-top:26px;}
+  h4{font-size:14px;margin-bottom:6px;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:var(--bg2);color:var(--brand);}
+  tr:nth-child(even) td{background:#fafbfd;}
+  code{background:#eef1f7;padding:1px 6px;border-radius:4px;font-size:.9em;}
+  .tag{display:inline-block;background:#eef1f7;color:var(--brand2);border-radius:5px;padding:1px 7px;font-size:12px;margin:2px 4px 2px 0;}
+  .hyp{color:#b45309;background:#fff7e6;border:1px solid #f5d999;border-radius:5px;padding:0 6px;font-size:.85em;}
+  .open-q{background:#fff4f4;border:1px solid #f3c9c9;border-radius:8px;padding:14px 18px;margin:10px 0;}
+  .open-q b{color:#b42318;}
+  .note{background:#eef6ff;border-left:3px solid var(--brand);padding:10px 16px;margin:12px 0;font-size:14px;}
+  ul{padding-left:20px;}
+  li{margin-bottom:4px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr;} nav.toc ol{columns:1;}}
+
+  /* ---- wireframe scheme ---- */
+  .wf{border:2px dashed #a9b4c8;border-radius:10px;background:#fbfcfe;padding:14px;margin:16px 0;font-size:12.5px;}
+  .wf-row{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;}
+  .wf-box{border:1px solid #a9b4c8;background:#fff;border-radius:6px;padding:8px 10px;flex:1;min-width:90px;text-align:center;}
+  .wf-box.brand{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .wf-box.accent{background:var(--accent);color:#1A1A1A;border-color:var(--accent);font-weight:600;}
+  .wf-box.ghost{background:#fff;border:1px dashed #a9b4c8;color:var(--text2);}
+  .wf-label{font-size:10px;color:var(--text2);margin-top:2px;}
+  .swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:6px;border:1px solid #0002;}
+  .tree{font-family:Consolas,Menlo,monospace;font-size:12.5px;background:#0e1626;color:#d7e0f5;border-radius:8px;padding:16px 20px;overflow-x:auto;line-height:1.7;}
+  .tree .p1{color:#F5A623;} .tree .p2{color:#7fb3ff;} .tree .p3{color:#8fa1c7;} .tree .c{color:#4fd39a;}
+  .ok{display:inline-block;color:#0a7a3d;font-weight:700;}
+  .no{display:inline-block;color:#c81e1e;font-weight:700;}
+  .mid{display:inline-block;color:#b45309;font-weight:700;}
+  .audit{background:#f2fff7;border:1px solid #bfe8cf;border-radius:8px;padding:10px 16px;margin:10px 0;font-size:13.5px;}
+  .audit.bad{background:#fff4f4;border-color:#f3c9c9;}
+  .audit.mixed{background:#fff9ec;border-color:#f0dca6;}
+  th.st,td.st{width:120px;white-space:nowrap;}
+  .steps{counter-reset:step;list-style:none;padding-left:0;}
+  .steps li{counter-increment:step;position:relative;padding-left:34px;margin-bottom:10px;}
+  .steps li::before{content:counter(step);position:absolute;left:0;top:0;background:var(--brand);color:#fff;
+    width:22px;height:22px;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:600;}
+  footer.doc{text-align:center;color:var(--text2);font-size:12px;padding:30px 0 10px;}
+</style>
+</head>
+<body>
+
+<header class="doc">
+  <div class="wrap">
+    <span class="badge">ТЗ</span><span class="badge" style="background:var(--success);color:#fff;">вайб-код</span>
+    <h1>Техническое задание на сайт seojazz.ru</h1>
+    <p>Составлено по результатам анализа папки-донора <code style="background:#2a3a5e;color:#fff;">vibecode-seojazz/</code> (бриф, блочный анализ, прототипы, 244 контент-файла, дизайн-система, UX-модель). Вне этой папки материалы не использовались.</p>
+    <p>Дата составления: 2026-08-21 · Источник: конвейер вайб-кода SEO Jazz, обновления материалов от 2026-07-06 — 2026-07-09.</p>
+    <p style="margin-top:14px;"><b>Аудит реализации (2026-08-21):</b> проверено по коду <code style="background:#2a3a5e;color:#fff;">site/frontend</code> (Next.js). Напротив пунктов — <span class="ok">✔</span> реализовано по ТЗ · <span class="no">✘</span> не реализовано / реализовано некорректно · <span class="mid">⚠</span> реализовано частично.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <h2>Содержание</h2>
+  <ol>
+    <li><a href="#project">О проекте и бизнес-цель</a></li>
+    <li><a href="#openq">Открытые вопросы к заказчику</a></li>
+    <li><a href="#stack">Стек технологий</a></li>
+    <li><a href="#ia">Информационная архитектура / карта сайта</a></li>
+    <li><a href="#header">Схема шапки и меню</a></li>
+    <li><a href="#mobile">Мобильная навигация</a></li>
+    <li><a href="#cart">Корзина / оформление заказа</a></li>
+    <li><a href="#footer">Схема футера</a></li>
+    <li><a href="#components">Библиотека компонентов</a></li>
+    <li><a href="#templates">Шаблоны страниц (конфиг блоков)</a></li>
+    <li><a href="#forms">Формы, CTA, лид-магниты</a></li>
+    <li><a href="#widgets">Мелкие требования и виджеты</a></li>
+    <li><a href="#design">Дизайн-система</a></li>
+    <li><a href="#seo">SEO-требования</a></li>
+    <li><a href="#trust">Трастовые данные и кейсы</a></li>
+    <li><a href="#priority">Приоритизация страниц</a></li>
+    <li><a href="#out">Что НЕ делать</a></li>
+  </ol>
+</nav>
+
+<!-- 1 -->
+<section id="project">
+  <h2>1. О проекте и бизнес-цель</h2>
+  <p><b>SEO Jazz</b> — SEO-агентство. Продаёт услуги привлечения клиентов из поиска для бизнеса заказчиков: SEO, продвижение в нейросетях (GEO/AI), создание сайтов, продвижение на площадках (Авито, Карты, 2ГИС).</p>
+  <p><b>Ключевая отстройка:</b> «SEO как система привлечения клиентов — платите за заявки и выручку, а не за позиции». Гарантия финансовая, привязана к KPI ступени тарифа.</p>
+  <p><b>Цель сайта:</b> заявки и звонки. Главное целевое действие — форма <i>«Получить рекомендации»</i> (мягкий лид-магнит с низким порогом входа).</p>
+  <h3>Продуктовое ядро</h3>
+  <p>Тарифная линейка — 5 ступеней: <b>45 000 / 65 000 / 95 000 / 140 000 / 220 000 ₽/мес</b> (Старт → Рост → Бизнес → Лидер → Под ключ). GEO/AI встроен в старшие тарифы.</p>
+  <h3>Модель сайта</h3>
+  <p>Гибрид: сайт услуг агентства + <b>матричный каталог посадочных</b> (услуга × CMS × тип сайта × отрасль/ниша × регион × площадка) + информационный контент-хаб + отдельный GEO/AI-кластер как УТП. Итого ориентир — <b>240+ страниц</b>, собираемых конфигом из переиспользуемых блоков, а не вёрстку постранично.</p>
+  <h3>Аудитория</h3>
+  <p>B2B: владельцы бизнеса и маркетологи/ЛПР, РФ/Москва. Язык текста — терминология конкретной аудитории ниши (пациенты, ЛПР, заказы — не абстрактные «клиенты»).</p>
+</section>
+
+<!-- 2 -->
+<section id="openq">
+  <h2>2. Открытые вопросы к заказчику <span class="hyp">не додумывать</span></h2>
+  <p>Зафиксированы в брифе (§9) как блокирующие следующие этапы. В тестовом задании закрываются разумными допущениями с пометкой, но <b>не выдаются за факт</b>.</p>
+  <div class="open-q"><span class="ok">✔</span> <b>1. Скоуп батча.</b> Сколько и какие именно страницы делать в этот цикл — весь каталог 240+ или топ-N по приоритету P1?
+    <div class="audit">Решено разумным дефолтом: рендерятся <b>все 244</b> файла контента через <code>[slug]/page.tsx</code> (генерация из конфига), плюс приоритет P1/P2/P3 сохранён и виден на каждой странице (блок «Приоритет запуска»). Явного согласования с заказчиком нет, но выбор не додуман — задокументирован в коде со ссылкой на источник.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>2. Мощность агентства.</b> Какой поток заявок агентство реально способно обработать.
+    <div class="audit">Не додумано — throttling/ограничений потока заявок в коде нет, вопрос корректно оставлен открытым.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>3. Маржа по услугам/нишам.</b> Данных в проекте нет.
+    <div class="audit">Маржа не выдумана и нигде не используется.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>4. KPI-числа.</b> Текущие/целевые лиды, средний чек, стоимость лида.
+    <div class="audit">Используются только уже подтверждённые архивные цифры (107 650 заявок, 8 из 10) — новые KPI не выдуманы.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>5. Гео-приоритет.</b> Москва+РФ или регионы.
+    <div class="audit">Схема не расширена — <code>LocalBusiness.areaServed</code> = «Москва, Россия», гео-дерево городов не придумано.</div>
+  </div>
+  <div class="open-q"><span class="mid">⚠</span> <b>6. Доп. страницы вне структуры.</b> <code>/garantii/</code>, <code>/o-kompanii/</code>, <code>/otzyvy/</code>, <code>/contacts/</code>, <code>/privacy-policy/</code>.
+    <div class="audit mixed">Обновлено 2026-08-21: <code>/contacts/</code> (виджеты карт) и <code>/privacy-policy/</code> (нужна для ссылки из чекбокса согласия на ПДн) созданы — это была инфраструктурная необходимость под виджеты/формы, а не додуманный ответ на весь открытый вопрос. <code>/garantii/</code>, <code>/o-kompanii/</code>, <code>/otzyvy/</code> — по-прежнему нет, вопрос трастовых страниц остаётся открытым к заказчику.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>7. Точные бренд-токены.</b> HEX-цвета и шрифты из темы <code>seojazz-new</code>.
+    <div class="audit">Обновлено 2026-08-21: акцентный и «успех» цвета возвращены к значениям гипотезы (<code>#F5A623</code>, <code>#2FB37A</code>) вместо самовольной замены на <code>#F6E120</code>/<code>#70DF54</code>; вторичный текст выровнен на <code>#6B7280</code>. Основной/дополнительный цвет не трогали — совпадали точно. См. §13.</div>
+  </div>
+  <div class="open-q"><span class="ok">✔</span> <b>8. CRM и SLA форм.</b> Куда падают заявки, мессенджеры.
+    <div class="audit">Честно: backend — явный мок (<code>source: "backend-mock"</code>, печать в консоль), реальная CRM не подключена и не выдумана. Мессенджеры — только подтверждённый Telegram, WhatsApp/Max не добавлены произвольно.</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="stack">
+  <h2>3. Стек технологий</h2>
+  <p>В материалах-донорах стек прямо не зафиксирован (архив — контент/дизайн/UX, не техзадание на код). Требования, которые стек должен удовлетворять:</p>
+  <ul>
+    <li>240+ страниц, генерируемых конфигом из одной библиотеки компонентов — без ручной вёрстки каждой;</li>
+    <li>SEO-критично: H1 текстовый, серверный рендер HTML (для индексации и AI-краулеров GEO/AI), быстрый Core Web Vitals;</li>
+    <li>Schema.org разметка (Service/FAQPage/BreadcrumbList/Organization/LocalBusiness/AggregateRating);</li>
+    <li>Формы с валидацией и интеграцией в CRM/аналитику.</li>
+  </ul>
+  <h3>Рекомендация</h3>
+  <table>
+    <tr><th>Слой</th><th>Технология</th><th>Почему</th><th class="st">Статус</th></tr>
+    <tr><td>Фронтенд-фреймворк</td><td>React + Next.js (App Router, SSG/ISR)</td><td>Статическая генерация 240+ страниц из конфигов, встроенный SEO (meta, sitemap), быстрый CWV</td><td class="st"><span class="ok">✔</span> Next.js 16 + React 19</td></tr>
+    <tr><td>Контент страниц</td><td>JSON/MD-конфиг на страницу (блок-схема из §10) + рендер через реестр компонентов</td><td>Соответствует принципу «страница = конфиг блоков», требуемому в мастер-шаблоне</td><td class="st"><span class="ok">✔</span> <code>PageConfig</code>+<code>BlockRenderer</code></td></tr>
+    <tr><td>Стили</td><td>Tailwind CSS + дизайн-токены (§13)</td><td>Быстрая сборка, единая система отступов/цвета, малый CSS-бандл</td><td class="st"><span class="no">✘</span> Tailwind не подключён — CSS Modules + CSS-переменные</td></tr>
+    <tr><td>Формы/бэкенд</td><td>Node.js API-роуты или лёгкий backend (FastAPI/Express) + вебхук в CRM</td><td>Приём заявок, антиспам, отправка событий аналитики</td><td class="st"><span class="ok">✔</span> FastAPI, антиспам-honeypot; CRM — мок</td></tr>
+    <tr><td>Хостинг</td><td>Любой Node-хостинг с CDN (Vercel-подобный) или VPS + Nginx</td><td>SSR/ISR + статика с быстрой отдачей по РФ</td><td class="st">— не проверялось (нет деплой-конфига в аудите)</td></tr>
+    <tr><td>Аналитика</td><td>Яндекс.Метрика (обязательно, аудитория Яндекс-first) + GA4 опционально</td><td>Коллтрекинг, цели по событиям форм</td><td class="st"><span class="mid">⚠</span> код подключения есть (<code>YandexMetrika.tsx</code>, цели на forms/звонок/TG/квиз), но грузится только если задан реальный ID счётчика — заказчик его не подтвердил</td></tr>
+  </table>
+  <div class="audit mixed">Итог по разделу: базовый стек (Next.js/React) реализован точно по рекомендации. Tailwind — заявлен в ТЗ, но не подключён (замена стека — риск для рабочего проекта, не в скоупе быстрых правок). Яндекс.Метрика подключена как готовый к работе модуль — активируется реальным ID счётчика от заказчика, без выдуманного ID.</div>
+  <div class="note">Донор-материалы (<code>CLAUDE.md</code> проекта) прямо указывают: реальный сайт-донор — WordPress, тема <code>seojazz-new</code>; новый билд — React, сборщик уточняется. Уточнить у заказчика: остаёмся на WordPress-теме (проще для не-разработчика вести контент) или переезжаем на React/Next (быстрее, гибче под матрицу 240+ страниц, но нужен разработчик для новых страниц/CMS-прослойка).</div>
+</section>
+
+<!-- 4 -->
+<section id="ia">
+  <h2>4. Информационная архитектура / карта сайта</h2>
+  <p>Модель — <b>матрица</b>: услуга × CMS × тип сайта × отрасль/ниша × регион × площадка + отдельный GEO/AI-кластер. 7 верхнеуровневых блоков:</p>
+  <div class="tree">
+<span class="p1">/</span>                                  корневая структура сайта seojazz.ru
+├─ <span class="p2">/uslugi/</span>                        <span class="c">хаб</span> — разводящая на все направления
+│  ├─ /prodvizhenie-po-pozicijam/     форматы оплаты (по позициям)
+│  ├─ /prodvizhenie-po-trafiku/       форматы оплаты (по трафику)
+│  ├─ /prodvizhenie-s-oplatoj-za-lidy/  форматы оплаты (за лиды)
+│  ├─ /prodvizhenie-za-rezultat/      форматы оплаты (за результат)
+│  ├─ /seo-pod-kljuch/, /seo-soprovozhdenie-sajta/
+│  └─ /seo-audit-sajta/, /tehnicheskij-audit-sajta/, /kommercheskij-audit-sajta/
+├─ <span class="p2">/geo-prodvizhenie/</span>              <span class="p1">GEO/AI-кластер — главное УТП</span>
+│  ├─ /ai-seo-prodvizhenie/, /aeo-prodvizhenie/, /llm-optimizacija/
+│  └─ /prodvizhenie-v-otvety-{chatgpt|claude|gemini|perplexity|deepseek|
+│      gigachat|grok|copilot|jandeksgpt-v-jandeks-alisu}/, /prodvizhenie-v-google-ai-overview/,
+│      /prodvizhenie-v-yandex-neuro/
+├─ <span class="p2">/seo-prodvizhenie-po-cms/</span>       <span class="c">хаб</span> SEO по CMS (~14 движков)
+│  └─ /seo-prodvizhenie-{wordpress|bitrix|tilda|opencart|joomla|drupal|
+│      magento|modx|umi|webflow|wix|insales|shop-script|bitrix24}/
+├─ <span class="p2">/seo-po-tipu-sajta/</span>             <span class="c">хаб</span> SEO по типу сайта
+│  └─ магазины / лендинги / корпоративные / каталоги / маркетплейсы / визитки / b2b / saas
+├─ <span class="p2">/seo-po-otraslyam/</span>              <span class="p1">хаб — самый большой блок, 100+ ниш</span>
+│  └─ медицина · стройка · красота · e-commerce (по товарным нишам) · авто · B2B ·
+│      недвижимость · услуги населению · HoReCa/туризм · образование · финансы · спорт …
+├─ <span class="p2">/sozdanie-sajtov/</span>                <span class="c">хаб</span> создание сайтов
+│  └─ /razrabotka-{internet-magazina|korporativnogo-sajta|lendinga|sajta-kataloga|
+│      sajta-vizitki|na-bitrix|na-tilda|na-wordpress}/
+├─ <span class="p2">/geomarketing/</span>, /prodvizhenie-na-ploshhadkah/, /lokalnoe-seo/  площадки
+│  └─ Авито под ключ · Яндекс.Карты · 2ГИС · Яндекс.Бизнес · Google Карты
+├─ <span class="p2">/cases/</span>                          кейсы «А→B» (карточки метрик)
+├─ <span class="p2">/tariffs/</span> · <span class="p2">/ceny/</span>                     тарифы + калькулятор  <span class="hyp">создать, ссылки на них уже заложены в контенте</span>
+├─ <span class="p2">/garantii/</span> · <span class="p2">/o-kompanii/</span> · <span class="p2">/otzyvy/</span>        трастовые страницы  <span class="hyp">вопрос §2.6 — подтвердить</span>
+├─ блог / «Всё о SEO»                инфостатьи TOFU/MOFU/BOFU
+└─ /contacts/, /privacy-policy/ (152-ФЗ), 404
+  </div>
+  <p><b>Единая матрица перелинковки</b> — сквозной SEO-приём: со страницы услуги → «эта услуга для интернет-магазина» → «…на Битрикс» → «…для стоматологии» → «…в Москве» → «+карты/Авито». Каждая страница — узел графа с блоком «связанные решения» (карточки, цена «от»), связи видимые и кликабельные, не только через JS.</p>
+  <div class="audit"><span class="ok">✔</span> Матрица реализована сильно: <code>[slug]/page.tsx</code> генерирует статические страницы для всех 244 файлов контента (<code>generateStaticParams</code>), каждая — из конфига блоков. Компонент <code>LinkMatrix</code> рендерит видимые текстовые ссылки из <code>vnutrennie_ssylki</code> контент-пакета.</div>
+  <div class="audit mixed"><span class="mid">⚠</span> <code>/contacts/</code> и <code>/privacy-policy/</code> созданы 2026-08-21 (см. §2, вопрос №6). Хабы <code>/garantii/</code>, <code>/o-kompanii/</code>, <code>/otzyvy/</code> — по-прежнему отсутствуют. <code>/ceny/</code> сознательно не создан — в коде явный комментарий «в 04-kontent/ нет ceny.md, страницу не создаём без источника» (корректное поведение, не додумано, но страница нужна по брифу). Есть <code>/tariffs/</code> как замена ценового интента.</div>
+</section>
+
+<!-- 5 -->
+<section id="header">
+  <h2>5. Схема шапки и меню</h2>
+  <h3>Desktop — шапка (sticky)</h3>
+  <div class="wf">
+    <div class="wf-row">
+      <div class="wf-box brand">ЛОГО<br><span class="wf-label">seojazz-logo.svg</span></div>
+      <div class="wf-box ghost">Услуги ▾<br><span class="wf-label">внутри — кластер GEO/AI</span></div>
+      <div class="wf-box ghost">Создание сайтов ▾</div>
+      <div class="wf-box ghost">Всё о SEO</div>
+      <div class="wf-box ghost">Продвижение на Авито</div>
+      <div class="wf-box ghost">Кейсы</div>
+      <div class="wf-box ghost">Вопросы</div>
+      <div class="wf-box ghost">Блог</div>
+      <div class="wf-box">☎ +7 (499) 990-5546</div>
+      <div class="wf-box accent">Получить рекомендации</div>
+    </div>
+    <p class="wf-label" style="margin-top:10px;">Sticky при скролле. Телефон кликабелен (tel:), коллтрекинг. Основная CTA — акцентная кнопка, всегда видна.</p>
+  </div>
+
+  <h3>Мега-меню пункта «Услуги»</h3>
+  <div class="wf">
+    <div class="wf-row">
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Форматы услуг</b><br>по позициям · по трафику · за лиды · за результат · под ключ · сопровождение
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>По отраслям</b><br>медицина · стройка · красота · e-commerce · авто · B2B · недвижимость · финансы …
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>По CMS</b><br>WordPress · Битрикс · Tilda · OpenCart · ещё ~10
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>По типу сайта</b><br>магазины · лендинги · корпоративные · каталоги
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Карты и площадки</b><br>геомаркетинг · Авито · 2ГИС · Я.Бизнес
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Аудиты</b><br>SEO-аудит · технический · коммерческий
+      </div>
+    </div>
+  </div>
+  <p>Список платформ (ChatGPT, Claude, Gemini, Perplexity, DeepSeek, GigaChat, ЯндексGPT/Алиса, Google AI Overview, Grok, Copilot) раскрывается в кластере «GEO/AI-продвижение» мега-меню «Услуги» — так задано в источнике (<code>dizajn-sistema.md §10</code>: «Услуги (Геомаркетинг, GEO-продвижение → платформы, AI SEO, AEO)»). Первоначальная версия этого ТЗ ошибочно требовала отдельный top-level пункт «GEO/AI» — эта формулировка исправлена 2026-08-21 по факту сверки с источником.</p>
+  <p><b>Хлебные крошки</b> (<code>BreadcrumbList</code>) — на всех посадочных страницах, под шапкой.</p>
+  <div class="audit mixed">
+    <p><span class="ok">✔</span> Шапка sticky, лого = реальный <code>seojazz-logo.svg</code>, телефон кликабельный (<code>tel:</code>), CTA «Получить рекомендации», главные пункты меню — точное совпадение с <code>dizajn-sistema.md §10</code> (Главная · Услуги · Создание сайтов · Всё о SEO · Продвижение на Авито · Вопросы · Кейсы · Блог).</p>
+    <p><span class="ok">✔</span> Обновлено 2026-08-21: в мега-меню «Услуги» добавлен 7-й кластер «Аудиты» (SEO-аудит, технический, коммерческий — реальные страницы). Большинство кластеров по-прежнему показывают только 2–4 ссылки-примера, а не полный список из 244 страниц — это осталось как есть, полное раскрытие не в скоупе быстрой правки.</p>
+    <p><span class="ok">✔</span> Уточнено по источнику: <code>dizajn-sistema.md §10</code> прямо описывает «Главное меню (как на сайте): ... Услуги (Геомаркетинг, GEO-продвижение → платформы, AI SEO, AEO)» — GEO/AI должен быть <b>внутри</b> мега-меню «Услуги», а не отдельным top-level пунктом. Реализация соответствует источнику; исходная пометка «✘» в этом ТЗ была основана на неподтверждённом wireframe, а не на реальной инструкции донора — исправлено.</p>
+    <p><span class="mid">⚠</span> Хлебные крошки реализованы (<code>Breadcrumbs</code>+<code>BreadcrumbList</code> schema), но для автосгенерированных страниц — это одна крошка (заголовок страницы), не полная иерархическая цепочка «Главная → Хаб → Ниша», как в примере ТЗ.</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="mobile">
+  <h2>6. Мобильная навигация</h2>
+  <div class="grid2">
+    <div>
+      <h3>Шапка mobile</h3>
+      <div class="wf">
+        <div class="wf-row">
+          <div class="wf-box brand" style="flex:0 0 70px;">ЛОГО</div>
+          <div class="wf-box ghost" style="flex:1;">☎</div>
+          <div class="wf-box ghost" style="flex:0 0 46px;">☰</div>
+        </div>
+      </div>
+      <p>Бургер-меню разворачивается в полноэкранный аккордеон по группам (Услуги с раскрывающимися кластерами форматов/GEO-AI/CMS/типов/отраслей/площадок/аудитов / Создание / Кейсы / Блог / Контакты).</p>
+    </div>
+    <div>
+      <h3>Sticky нижняя панель (только mobile)</h3>
+      <div class="wf">
+        <div class="wf-row">
+          <div class="wf-box ghost">☎ Позвонить</div>
+          <div class="wf-box ghost">✈ Telegram</div>
+          <div class="wf-box accent">Заявка</div>
+        </div>
+      </div>
+      <p>Зафиксирована снизу, всегда поверх контента. Главный CTA виден на первом экране без скролла — обязательное правило на всех шаблонах.</p>
+    </div>
+  </div>
+  <p>Точки перелома адаптивности: <code>1280 / 1024 / 768 / 480</code> px. Тяжёлые таблицы (тарифы, сравнение GEO) на мобильном — аккордеон/карточки, не горизонтальная простыня. Калькулятор и квиз — по одному шагу на экран.</p>
+  <div class="audit mixed">
+    <p><span class="ok">✔</span> Sticky-панель снизу реализована (Позвонить / Telegram / Заявка), fixed, только мобильная.</p>
+    <p><span class="ok">✔</span> Квиз (<code>Quiz</code>) и калькулятор (<code>Calculator</code>) — пошаговые интерактивы, по одному шагу/блоку выбора за раз.</p>
+    <p><span class="ok">✔</span> Обновлено 2026-08-21: бургер-меню — полноэкранный оверлей (<code>position: fixed</code> под шапкой на всю высоту, со скроллом); пункт «Услуги» стал раскрывающимся аккордеоном с теми же группами мега-меню (форматы · GEO/AI · CMS · типы · отрасли · карты/площадки · аудиты), плюс добавлен пункт «Контакты». GEO/AI внутри группы «Услуги», а не отдельным пунктом — так и должно быть по источнику (см. §5).</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="cart">
+  <h2>7. Корзина / оформление заказа <span class="ok">✔</span></h2>
+  <div class="audit">Реализовано по ТЗ: корзины нет, вместо неё — <code>LeadForm</code>, <code>Calculator</code>, <code>Quiz</code>, <code>PricingTiers</code> с кнопками «Обсудить проект»/CTA на форму заявки.</div>
+  <div class="note">
+    <b>Корзины на сайте нет и не нужна.</b> Это не интернет-магазин — сайт услуг B2B-агентства. Модель конверсии — не «купить товар», а «оставить заявку на разбор/аудит/расчёт».
+  </div>
+  <p>Вместо корзины и checkout-флоу используются:</p>
+  <ul>
+    <li><b>Формы заявки</b> (2–3 поля: имя, телефон/мессенджер, сайт) — на каждой коммерческой странице;</li>
+    <li><b>Калькулятор стоимости</b> — пошаговый интерактив с прогнозом бюджета/заявок вместо «суммы в корзине»;</li>
+    <li><b>Квиз-расчёт</b> — мультишаговая форма (услуга/ниша → регион → задача → контакт) вместо каталога товаров;</li>
+    <li><b>Тарифные карточки</b> (5 ступеней) с кнопкой «Обсудить проект»/«Заказать» вместо «В корзину».</li>
+  </ul>
+  <p>Если у заказчика есть скрытая потребность в «личном кабинете клиента» (проверка статуса SEO-работ, отчёты) — это отдельный функционал, не упомянутый в архиве; фиксируется как <span class="hyp">открытый вопрос</span>, не в скоупе тестового задания без отдельного подтверждения.</p>
+</section>
+
+<!-- 8 -->
+<section id="footer">
+  <h2>8. Схема футера</h2>
+  <div class="wf">
+    <div class="wf-row">
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>О компании</b><br>лого · краткий оффер · 107 650 заявок/год · 8 из 10 — постоянные клиенты
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Услуги</b><br>ссылки на все хабы (услуги/GEO/CMS/типы/отрасли/площадки)
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Компания</b><br>кейсы · тарифы · о компании · вопросы · блог · контакты
+      </div>
+      <div class="wf-box ghost" style="flex:1;text-align:left;">
+        <b>Контакты</b><br>☎ +7 (499) 990-5546 · Telegram @IldarNev · email · адрес/город
+      </div>
+    </div>
+    <div class="wf-row" style="margin-top:8px;">
+      <div class="wf-box ghost" style="flex:1;">Рейтинг Яндекс.Справочника (виджет)</div>
+      <div class="wf-box ghost" style="flex:1;">Короткая форма заявки</div>
+      <div class="wf-box ghost" style="flex:1;">© SEO Jazz · Политика конфиденциальности · согласие на обработку ПДн</div>
+    </div>
+  </div>
+  <p>Футер — сквозной трастовый слой (счётчики + рейтинг), плюс последняя точка конверсии (короткая форма) на каждой странице.</p>
+  <div class="audit mixed">
+    <p><span class="ok">✔</span> Логотип, короткий оффер, навигация по всем пунктам меню, контакты (телефон+Telegram) — реализовано.</p>
+    <p><span class="mid">⚠</span> Обновлено 2026-08-21: в футере честный текстовый бейдж вместо заглушки — «виджет подключим после подтверждения карточки компании заказчиком». Реального встраиваемого виджета Яндекс.Справочника по-прежнему нет: нужен ID реальной карточки компании, которого нет в архиве, — выдумывать рейтинг/ID нельзя.</p>
+    <p><span class="ok">✔</span> Короткая форма заявки в футере добавлена (<code>FooterLeadForm</code>: контакт + согласие на ПДн со ссылкой на политику).</p>
+    <p><span class="ok">✔</span> Счётчики (107 650, до 15 000/мес, 8 из 10) добавлены в футер.</p>
+    <p><span class="ok">✔</span> Ссылка «Политика конфиденциальности» ведёт на созданную страницу <code>/privacy-policy/</code>; чекбоксы согласия на ПДн (в футере и в основной <code>LeadForm</code>) теперь на неё ссылаются.</p>
+  </div>
+</section>
+
+<!-- 9 -->
+<section id="components">
+  <h2>9. Библиотека переиспользуемых компонентов</h2>
+  <p>Каждая из 240+ страниц собирается как <b>конфиг</b> (набор блоков в заданном порядке + контент), а не вёрстка с нуля. Универсальный порядок блоков-«скелета» для коммерческой страницы:</p>
+  <ol class="steps">
+    <li>Hero — H1 под интент + оффер + метрики + 1–2 CTA</li>
+    <li>УТП-триплет / метрики</li>
+    <li>Проблемный блок («N причин / почему не работает»)</li>
+    <li>Кому подходит / не подходит (честный дисквалификатор)</li>
+    <li>Что входит / направления работ</li>
+    <li>Этапы работы (таймлайн)</li>
+    <li>Прайс (тарифы)</li>
+    <li>Кейсы «А→B» с метриками</li>
+    <li>Доверие: команда + счётчики + награды + отзывы</li>
+    <li>Гарантии (финансовые, по KPI)</li>
+    <li>FAQ (answer-first)</li>
+    <li>Формы + лид-магнит</li>
+    <li>Перелинковка на смежные страницы</li>
+  </ol>
+  <table>
+    <tr><th>Компонент</th><th>Назначение</th><th>Мобильная логика</th><th class="st">Статус</th></tr>
+    <tr><td><code>Hero</code></td><td>Оффер за 5 сек, H1 текстовый, 2 CTA</td><td>CTA не уезжает под сгиб</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>TrustBar</code></td><td>Счётчики (107 650, лет опыта, ниш) + рейтинг Яндекс</td><td>Скролл-лента</td><td class="st"><span class="mid">⚠</span> без рейтинга Яндекс</td></tr>
+    <tr><td><code>PricingTiers</code></td><td>Тарифы 5 ступеней, KPI + гарантия, переключатель</td><td>Аккордеон/карусель</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>Calculator</code></td><td>Прогноз бюджета/заявок по шагам</td><td>Один шаг на экран</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>Quiz / LeadQuiz</code></td><td>Вовлекающая мультишаговая заявка</td><td>Полноэкранные шаги</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>CaseCardsAB</code></td><td>Кейсы «точка А → точка B» в деньгах/заявках</td><td>Карусель/свайп</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>GeoAIBlock</code></td><td>Блок-обгон: продвижение в ответах нейросетей</td><td>Стек</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>ProblemsGrid</code></td><td>«N причин / почему не цитирует»</td><td>1 колонка</td><td class="st"><span class="ok">✔</span> компонент есть, в авто-страницах не используется</td></tr>
+    <tr><td><code>StepsTimeline</code></td><td>Этапы работ</td><td>Вертикаль на мобильном</td><td class="st"><span class="mid">⚠</span> компонент есть, на большинстве страниц не подключён</td></tr>
+    <tr><td><code>FAQAccordion</code></td><td>Возражения + AI-выдача, разметка FAQPage</td><td>Полная ширина</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>Guarantees</code></td><td>Финансовая гарантия по KPI</td><td>Стек</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>ComparisonTable</code></td><td>Мы / другие (для GEO, тарифов)</td><td>Карточки на мобильном</td><td class="st"><span class="mid">⚠</span> только на демо-страницах (не на всей матрице)</td></tr>
+    <tr><td><code>ProvenByData</code></td><td>Внешние исследования (Similarweb/Ahrefs) — только GEO</td><td>Стек</td><td class="st"><span class="mid">⚠</span> используется как «источник данных страницы», не как внешние исследования</td></tr>
+    <tr><td><code>LinkMatrix</code></td><td>Перелинковка кластеров, видимые ссылки</td><td>Сетка → стек</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>LeadForm</code></td><td>Заявка, 2–3 поля, согласие ПДн</td><td>Крупные тач-цели</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>StickyMobileBar</code></td><td>Позвонить / TG / Заявка</td><td>Только mobile, fixed снизу</td><td class="st"><span class="ok">✔</span></td></tr>
+    <tr><td><code>Team / Expert</code></td><td>Фото + роль эксперта, E-E-A-T</td><td>Стек</td><td class="st"><span class="mid">⚠</span> текстовые карточки, фото нет (см. §16)</td></tr>
+  </table>
+  <div class="audit">Плюс сверх ТЗ: реализован <code>AIRatingWidget</code> («AI-рейтинг брендов» — усиливает GEO/AI-блок обгона).</div>
+</section>
+
+<!-- 10 -->
+<section id="templates">
+  <h2>10. Шаблоны страниц (какие блоки обязательны по типу)</h2>
+  <p>Обозначения: ✅ обязателен · ○ желателен · — не типичен.</p>
+  <table>
+    <tr><th>Блок</th><th>Услуги</th><th>GEO</th><th>Ниши</th><th>CMS</th><th>Типы сайтов</th><th>Создание</th><th>Площадки</th></tr>
+    <tr><td>Hero + CTA</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>УТП / метрики рынка</td><td>✅</td><td>✅</td><td>○</td><td>✅</td><td>✅</td><td>○</td><td>○</td></tr>
+    <tr><td>Проблемный блок «N причин»</td><td>○</td><td>✅</td><td>○</td><td>✅</td><td>✅</td><td>—</td><td>○</td></tr>
+    <tr><td>Кому подходит / не подходит</td><td>✅</td><td>○</td><td>○</td><td>✅</td><td>○</td><td>✅</td><td>✅</td></tr>
+    <tr><td>Что входит</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>Этапы / таймлайн</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>Прайс</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅ (Авито)</td></tr>
+    <tr><td>Калькулятор / квиз</td><td>✅</td><td>—</td><td>○</td><td>✅</td><td>○</td><td>○</td><td>✅ (гео)</td></tr>
+    <tr><td>Кейсы «А→B»</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>Команда + эксперт</td><td>✅</td><td>✅</td><td>✅</td><td>○</td><td>✅</td><td>○</td><td>○</td></tr>
+    <tr><td>Счётчики + награды</td><td>✅</td><td>✅</td><td>○</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>Отзывы</td><td>✅</td><td>✅</td><td>○</td><td>○</td><td>✅</td><td>✅</td><td>○</td></tr>
+    <tr><td>Гарантии</td><td>✅</td><td>✅</td><td>○</td><td>○</td><td>✅</td><td>○</td><td>○</td></tr>
+    <tr><td>«Подтверждено данными»</td><td>—</td><td>✅</td><td>—</td><td>—</td><td>✅</td><td>—</td><td>—</td></tr>
+    <tr><td>Сравнительная таблица</td><td>—</td><td>✅</td><td>—</td><td>—</td><td>✅</td><td>—</td><td>—</td></tr>
+    <tr><td>FAQ answer-first</td><td>✅</td><td>✅</td><td>○</td><td>✅</td><td>✅</td><td>✅</td><td>○</td></tr>
+    <tr><td>Матрица перелинковки</td><td>○</td><td>✅</td><td>○</td><td>✅</td><td>✅</td><td>○</td><td>○</td></tr>
+    <tr><td>Формы + лид-магнит</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  </table>
+  <h3>Уникальные блоки поверх ядра, по группам</h3>
+  <ul>
+    <li><b>GEO/AI:</b> метрики AI-рынка; факторы ранжирования нейросети (%-веса); citation rate в кейсах; виджет «рейтинг брендов по мнению нейросетей»; лид-магнит «проверка цитируемости».</li>
+    <li><b>Ниши:</b> особенности ниши + E-E-A-T/YMYL (авторы-эксперты, сертификаты); локальное SEO + каталоги; кейс «А→B» в деньгах.</li>
+    <li><b>CMS:</b> контент под сущности движка (Views/инфоблоки/таксономии); квиз-калькулятор; для WordPress/Tilda — гибрид «гайд + услуга».</li>
+    <li><b>Типы сайтов:</b> направления/семантика под тип (B2B/ЛПР для корпоративных; категории/карточки для магазина).</li>
+    <li><b>Создание сайтов:</b> экспертиза «когда полезно»; портфолио; 8 этапов разработки; блок «сайт сразу под SEO/GEO».</li>
+    <li><b>Площадки:</b> гео-подтип (управление присутствием, аудит присутствия); Авито-подтип (тарифы по объёму, 9 этапов, бриф-документ).</li>
+  </ul>
+  <div class="audit mixed">
+    <p><span class="ok">✔</span> Универсальный «скелет» блока (Hero → доверие → прайс → кейсы → гарантии → FAQ → GEO-блок → форма) реализован программно в <code>contentLayer.ts</code> и автоматически применяется ко всем 244 страницам.</p>
+    <p><span class="mid">⚠</span> Уникальные блоки «поверх ядра» по группам (сравнительная таблица и «подтверждено данными» для GEO, портфолио для создания сайтов, аудит присутствия для площадок и т.д.) реализованы только на 10 вручную собранных примерах (<code>pageConfigs.ts</code>): <code>ai-seo-prodvizhenie</code>, <code>geomarketing</code>, <code>prodvizhenie-korporativnyh-sajtov</code>, <code>prodvizhenie-na-avito-pod-kljuch</code>, <code>prodvizhenie-stomatologii</code>, <code>seo-pod-kljuch</code>, <code>seo-prodvizhenie-wordpress</code>, <code>sozdanie-sajtov</code>, <code>uslugi</code>, <code>cases</code>. Остальные ~234 страницы матрицы получают идентичный универсальный набор блоков независимо от группы (ниша/CMS/тип/площадка) — специализация по группе из §10 не масштабирована на весь каталог.</p>
+  </div>
+</section>
+
+<!-- 11 -->
+<section id="forms">
+  <h2>11. Формы, CTA и лид-магниты</h2>
+  <table>
+    <tr><th>Форма</th><th>Где</th><th>Поля</th><th>После отправки</th><th class="st">Статус</th></tr>
+    <tr><td>«Получить рекомендации» (главная)</td><td>1-й экран, финал, шапка-поповер</td><td>Имя, телефон/мессенджер, сайт (URL)</td><td>«Спасибо, ответим за 15 минут» + контакт эксперта</td><td class="st"><span class="mid">⚠</span> форма есть, «шапка-поповер» нет — CTA просто якорь <code>#lead</code></td></tr>
+    <tr><td>Квиз-расчёт</td><td>Форматы, ниши, площадки, создание сайтов</td><td>Услуга/ниша → регион → задача → контакт</td><td>Диапазон стоимости + заявка</td><td class="st"><span class="mid">⚠</span> один общий <code>Quiz</code>, шаги не всегда «услуга→регион→задача»</td></tr>
+    <tr><td>Аудит цитируемости (GEO)</td><td>GEO-страницы</td><td>Сайт, ниша, контакт</td><td>«Проверим по 10 запросам, ответ за 15 мин»</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — <code>LeadForm variant="geo-audit"</code>: свой заголовок, интро, success-текст, тег заявки; group-классификатор <code>getPageGroup()</code> назначает вариант автоматически всем GEO-страницам</td></tr>
+    <tr><td>Бесплатный аудит / прогноз</td><td>Услуги, CMS, типы, ниши</td><td>Сайт, контакт</td><td>«Спасибо» + сроки ответа</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — <code>LeadForm variant="seo-audit"</code> на всех коммерческих/CMS/нишевых/типовых страницах (не только 10 демо)</td></tr>
+    <tr><td>Короткая заявка</td><td>Футер, страница кейсов</td><td>Телефон/мессенджер</td><td>«Спасибо»</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — <code>FooterLeadForm</code> в футере (см. §8)</td></tr>
+    <tr><td>Обратный звонок</td><td>Шапка / мобильная sticky-панель</td><td>Телефон</td><td>«Перезвоним» + время</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — новый компактный <code>CallbackForm</code> (телефон + согласие), поповер по кнопке «Обратный звонок» в шапке (десктоп) и в мобильном меню; прямой <code>tel:</code>-линк оставлен как есть</td></tr>
+  </table>
+  <div class="audit mixed">Обновлено 2026-08-21: вместо одной одинаковой <code>LeadForm</code> на все типы страниц теперь 4 варианта (<code>default</code>/<code>geo-audit</code>/<code>seo-audit</code>/<code>platform-audit</code>), назначаемые автоматически по URL через <code>lib/pageGroup.ts</code> — различаются заголовок, интро-текст, success-сообщение и тег заявки (тот же паттерн, что уже использовался в <code>FooterLeadForm</code>). Плюс отдельная компактная форма обратного звонка. Набор полей формы (имя/телефон/Telegram/канал/сообщение) внутри каждого варианта не менялся — «максимум 2-3 поля» из правила форм ниже по-прежнему не соблюдено дословно.</div>
+  <p><b>Правило форм:</b> для первого контакта максимум 2–3 поля; обязательное согласие на обработку ПДн (чекбокс, ссылка на политику конфиденциальности — 152-ФЗ); поле телефона допускает ввод как для звонка, так и для мессенджера.</p>
+  <div class="audit mixed"><span class="ok">✔</span> Обновлено 2026-08-21: согласие на ПДн (обязательный чекбокс) теперь ссылается на созданную страницу <code>/privacy-policy/</code>, и в основной <code>LeadForm</code>, и в новой <code>FooterLeadForm</code>. <span class="mid">⚠</span> Полей в основной форме по-прежнему больше заявленных 2–3 (имя, телефон, Telegram, канал, сообщение) — не критично, но не соответствует правилу дословно; короткая форма в футере это правило уже соблюдает (1 поле контакта + согласие).</div>
+  <h3>Основные и вторичные CTA</h3>
+  <ul>
+    <li><span class="ok">✔</span> <b>Главное действие сайта</b> (везде одно на страницу, не конкурирует с другими): «Получить рекомендации».</li>
+    <li><span class="ok">✔</span> обновлено 2026-08-21: по типу страницы — «Рассчитать стоимость» (форматы услуг) · «Проверить видимость бесплатно» (GEO) · «Бесплатный аудит присутствия» (площадки) · «Обсудить проект» (создание сайтов) реализованы через <code>pageGroupContent</code> (<code>sharedContent.ts</code>) + <code>getPageGroup(url)</code> (<code>lib/pageGroup.ts</code>) и применяются ко всем 244 страницам, не только к 10 демо. «Хочу такие результаты» (после кейсов) и «Задать вопрос эксперту» (после FAQ) — добавлены как опциональный <code>action</code> у блоков <code>cases</code>/<code>faq</code>, тоже на всех автостраницах.</li>
+  </ul>
+  <h3>Лид-магниты</h3>
+  <ul>
+    <li><span class="ok">✔</span> Персональные рекомендации по росту трафика/конверсии/лидов (все коммерческие страницы) — <code>LeadForm variant="default"</code>.</li>
+    <li><span class="ok">✔</span> обновлено 2026-08-21: бесплатная проверка видимости в нейросетях (GEO-кластер) — <code>LeadForm variant="geo-audit"</code> со своим заголовком/интро/success-текстом, назначается автоматически всем GEO-страницам. Число «10 запросов» из формулировки не проверяемо и не проставлено как факт.</li>
+    <li><span class="ok">✔</span> обновлено 2026-08-21: бесплатный SEO-аудит/прогноз заявок (услуги, ниши, CMS) — <code>LeadForm variant="seo-audit"</code>, тоже group-aware на всей матрице.</li>
+    <li><span class="no">✘</span> PDF-презентация «ТОП-5 каналов привлечения клиентов» — не реализована; требует решения — либо реальный PDF-файл (образовательный контент, не факт компании), либо email-форма «пришлём материал на почту». Оставлено на отдельное решение заказчика/пользователя.</li>
+    <li><span class="ok">✔</span> обновлено 2026-08-21: аудит присутствия на картах/площадках — <code>LeadForm variant="platform-audit"</code>, назначается автоматически всем страницам группы «Площадки».</li>
+  </ul>
+  <h3>Звонок и мессенджеры</h3>
+  <p>Телефон <b>+7 (499) 990-5546</b> — кликабельный, коллтрекинг. Telegram <b>@IldarNev</b> — основной неформальный канал. WhatsApp/Max — как альтернатива, <span class="hyp">официальный статус уточнить у заказчика</span>.</p>
+  <div class="audit mixed"><span class="ok">✔</span> Телефон и Telegram — реализованы верно и единообразно (в <code>contacts.ts</code>, с комментарием, что WhatsApp/Max осознанно не добавлены без подтверждения источника — корректное решение). Обновлено 2026-08-21: добавлена форма обратного звонка (<code>CallbackForm</code>) — телефон+согласие, поповер в шапке и мобильном меню, независимо от прямого <code>tel:</code>-линка. <span class="no">✘</span> Коллтрекинг (подмена номера) по-прежнему не подключён — статичный <code>tel:</code>-линк. Требует реального аккаунта у провайдера коллтрекинга (Calltouch/Comagic и т.п.) — без него добавить можно только фиктивную заглушку, что запрещено правилом «не выдумывать»; остаётся открытым вопросом к заказчику.</div>
+</section>
+
+<!-- 12 -->
+<section id="widgets">
+  <h2>12. Мелкие требования и виджеты</h2>
+  <table>
+    <tr><th>Элемент</th><th>Требование</th><th class="st">Статус</th></tr>
+    <tr><td><b>Яндекс.Карты</b></td><td>Виджет карты на странице контактов и на страницах группы «Площадки».</td><td class="st"><span class="mid">⚠</span> обновлено 2026-08-21 — <code>MapsWidgets</code> (iframe без API-ключа) на новой странице <code>/contacts/</code> и на <code>/geomarketing/</code>; точечный адрес офиса не подтверждён, поэтому карта на уровне города (Москва), не пин на выдуманный адрес</td></tr>
+    <tr><td><b>2ГИС</b></td><td>Ссылка/виджет карточки компании на странице контактов и на посадочной «продвижение в 2ГИС».</td><td class="st"><span class="mid">⚠</span> добавлена честная ссылка-поиск на 2ГИС (не встроенный виджет карточки — для него нужен реальный ID карточки компании, которого нет)</td></tr>
+    <tr><td><b>Google Карты</b></td><td>Дублирующий виджет/ссылка на странице контактов и посадочной «продвижение в Google Maps».</td><td class="st"><span class="mid">⚠</span> добавлен iframe-виджет (уровень города, без API-ключа) на <code>/contacts/</code> и <code>/geomarketing/</code></td></tr>
+    <tr><td><b>Рейтинг Яндекс.Справочника</b></td><td>Виджет-бейдж в шапке/футере — сквозной элемент доверия.</td><td class="st"><span class="mid">⚠</span> честный текстовый бейдж в футере вместо заглушки; встраиваемый виджет с реальным рейтингом невозможен без ID карточки компании от заказчика</td></tr>
+    <tr><td><b>Счётчик заявок</b></td><td>«107 650 заявок за прошлый год» — крупный трастовый счётчик на главной и в футере.</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — счётчики теперь и в футере</td></tr>
+    <tr><td><b>Telegram deeplink</b></td><td>Кнопка/ссылка <code>t.me/IldarNev</code> в шапке, sticky-панели, контактах.</td><td class="st"><span class="ok">✔</span> реализовано полностью</td></tr>
+    <tr><td><b>Коллтрекинг</b></td><td>Подмена номера/трекинг звонков с сайта.</td><td class="st"><span class="no">✘</span> не реализован, статичный <code>tel:</code> — требует реального аккаунта провайдера коллтрекинга (открытый вопрос к заказчику)</td></tr>
+    <tr><td><b>Яндекс.Метрика</b></td><td>Обязательна, с целями на отправку форм, клики по звонку/TG, шаги квиза.</td><td class="st"><span class="mid">⚠</span> обновлено 2026-08-21 — модуль <code>YandexMetrika.tsx</code> и <code>reachGoal</code> на всех событиях готовы, но активируются только реальным ID счётчика (env-переменная), которого нет; события всё ещё параллельно пушатся в <code>window.dataLayer</code></td></tr>
+    <tr><td><b>Согласие на обработку ПДн</b></td><td>Чекбокс на каждой форме + отдельная страница политики конфиденциальности (152-ФЗ).</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — страница <code>/privacy-policy/</code> создана, чекбоксы ссылаются на неё</td></tr>
+    <tr><td><b>Cookie-уведомление</b></td><td>Баннер согласия на использование cookies при первом визите.</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — <code>CookieConsent</code>, localStorage, ссылка на политику</td></tr>
+    <tr><td><b>Schema.org разметка</b></td><td>Service, Organization, FAQPage, BreadcrumbList, LocalBusiness, AggregateRating.</td><td class="st"><span class="ok">✔</span> реализовано полнее ТЗ (+Article, +HowTo)</td></tr>
+    <tr><td><b>Sitemap.xml / robots.txt</b></td><td>Автогенерация под 240+ страниц, обновление при добавлении новых.</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — добавлен <code>app/robots.ts</code> со ссылкой на sitemap; sitemap.ts был готов ранее</td></tr>
+    <tr><td><b>Страница 404</b></td><td>С навигацией на хабы и формой заявки — не тупик.</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — добавлена <code>LeadForm</code> на 404</td></tr>
+    <tr><td><b>Изображения</b></td><td>Формат WebP, ленивая загрузка, фиксированные размеры (CLS = 0).</td><td class="st"><span class="ok">✔</span> растровых изображений нет вообще — всё на inline SVG, CLS изначально нулевой</td></tr>
+    <tr><td><b>Иконки</b></td><td>Единый линейный SVG-набор (спрайт), без эмодзи в интерфейсе.</td><td class="st"><span class="ok">✔</span> lucide-react, единый линейный стиль</td></tr>
+    <tr><td><b>Логотип</b></td><td>Использовать существующий <code>seojazz-logo.svg</code> с реального сайта.</td><td class="st"><span class="ok">✔</span> реальный файл лежит в <code>public/</code></td></tr>
+  </table>
+  <div class="audit mixed">Обновлено 2026-08-21: из 17 пунктов теперь ✔ 11, частично ⚠ 5, не реализован 1 (коллтрекинг — требует реального провайдера/аккаунта, которого нет в архиве; выдумывать нельзя). Карты/2ГИС/рейтинг Яндекса/Метрика подключены как честные рабочие заглушки без выдуманных ID/адресов — станут полноценными виджетами после того, как заказчик подтвердит реквизиты.</div>
+</section>
+
+<!-- 13 -->
+<section id="design">
+  <h2>13. Дизайн-система</h2>
+  <div class="note">Все цвета и шрифты ниже помечены заказчиком-донором как <b>[гипотеза]</b> — не сверены с CSS реальной темы <code>seojazz-new</code> или брендбуком. В работу закладывать с пометкой «требует подтверждения», не как факт.</div>
+  <h3>Цвета <span class="hyp">гипотеза</span></h3>
+  <table>
+    <tr><th>Роль</th><th>Цвет по ТЗ</th><th>Где</th><th class="st">Статус</th></tr>
+    <tr><td>Основной (бренд)</td><td><span class="swatch" style="background:#1B2A4A"></span>#1B2A4A</td><td>Шапка, заголовки, футер</td><td class="st"><span class="ok">✔</span> совпадает точно</td></tr>
+    <tr><td>Дополнительный</td><td><span class="swatch" style="background:#33415C"></span>#33415C</td><td>Подзаголовки, иконки, границы</td><td class="st"><span class="ok">✔</span> совпадает точно</td></tr>
+    <tr><td>Акцент («джаз», CTA)</td><td><span class="swatch" style="background:#F5A623"></span>#F5A623</td><td>Кнопки, ключевые метрики</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — возвращён к <span class="swatch" style="background:#F5A623"></span>#F5A623 (был самовольно заменён на #F6E120)</td></tr>
+    <tr><td>Успех/рост</td><td><span class="swatch" style="background:#2FB37A"></span>#2FB37A</td><td>Метрики роста «×N», галочки в тарифах</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — возвращён к <span class="swatch" style="background:#2FB37A"></span>#2FB37A (был #70DF54)</td></tr>
+    <tr><td>Фон</td><td><span class="swatch" style="background:#FFFFFF;border-color:#ccc"></span>#FFFFFF / <span class="swatch" style="background:#F4F6FA"></span>#F4F6FA</td><td>Чередование секций</td><td class="st"><span class="ok">✔</span> близко (#FFFFFF / #F9FAFD)</td></tr>
+    <tr><td>Текст</td><td><span class="swatch" style="background:#1A1A1A"></span>#1A1A1A</td><td>Основной текст</td><td class="st"><span class="ok">✔</span> совпадает точно</td></tr>
+    <tr><td>Текст второстепенный</td><td><span class="swatch" style="background:#6B7280"></span>#6B7280</td><td>Подписи, мета</td><td class="st"><span class="ok">✔</span> обновлено 2026-08-21 — выровнен точно на #6B7280 (был #7890B3)</td></tr>
+  </table>
+  <p>Контраст текста/CTA — WCAG AA (≥4.5:1 текст, ≥3:1 крупные элементы). Акцентный цвет — только на действии и ключевых цифрах, не «раскрашивать» весь макет.</p>
+  <div class="audit mixed">В коде остаются 2 доп. цвета сверх системы ТЗ (<code>--brand-cyan</code> #00A6F6 для «инфо», <code>--brand-pink</code> #FF679F для «тёплого акцента») — расширение сверх дизайн-системы, роль не описана в архиве; не трогали в этом цикле правок, так как это добавочные токены, а не подмена цветов из §13.</div>
+  <h3>Типографика <span class="hyp">гипотеза</span></h3>
+  <p>Рекомендация: один гротеск с кириллицей (Golos Text / Manrope / Inter). H1 32–44px bold (один на страницу, текстом, не картинкой) · H2 26–32px semibold · H3 20–24px semibold · основной текст 16–18px / line-height 1.6 · таблицы 14–16px.</p>
+  <div class="audit"><span class="ok">✔</span> Manrope подключён как основной гротеск (входит в список рекомендованных). Добавлены Bricolage Grotesque (display) и Fraunces italic (акцентные слова в заголовках) — усиление сверх ТЗ, не противоречит требованию «H1 текстом, не картинкой» (акцент — тот же текст, другим шрифтом/начертанием).</div>
+  <h3>Сетка и breakpoints</h3>
+  <p>Desktop: контент 1200–1280px, 12 колонок, gutter 24–32px. Tablet: 8 колонок. Mobile: 1 колонка. Точки перелома: <code>1280 / 1024 / 768 / 480</code>. Радиус карточек 8–12px, мягкие тени, вертикальный ритм секций 64–96px desktop / 40–56px mobile.</p>
+  <h3>Характер дизайна</h3>
+  <p>Строгий экспертный технологичный минимализм с одним тёплым «джазовым» акцентом. Данные и цифры — главный визуальный герой (не декоративная витрина). Без пёстрых эмодзи в UI, без дешёвых стоков, без тяжёлых 3D/видео-фонов.</p>
+</section>
+
+<!-- 14 -->
+<section id="seo">
+  <h2>14. SEO-требования (обязательные ограничения дизайна и разработки)</h2>
+  <ol>
+    <li><span class="ok">✔</span> H1 — текстовый и видимый, один на страницу.</li>
+    <li><span class="ok">✔</span> H2–H3 соответствуют структуре контента, не заменяются декором.</li>
+    <li><span class="ok">✔</span> Важный SEO-текст (особенности ниши, FAQ, «что входит») — текстом, не в картинке.</li>
+    <li><span class="ok">✔</span> Ключевые блоки не скрываются так, что теряется индексация (SSG/SSR, без гейтов за JS).</li>
+    <li><span class="ok">✔</span> Внутренние ссылки матрицы перелинковки — видимые, кликабельные (<code>&lt;Link&gt;</code>), не только через JS.</li>
+    <li><span class="ok">✔</span> FAQ читаем и размечен <code>FAQPage</code> (условно — только если тип в <code>mikrorazmetka</code> исходного md-файла).</li>
+    <li><span class="ok">✔</span> Таблицы тарифов/сравнения — адаптивны и текстовые.</li>
+    <li><span class="ok">✔</span> Карточки услуг/ниш/кейсов масштабируемы на сотни страниц без переверстки — подтверждено: все 244 страницы генерируются одним рендерером.</li>
+    <li>Страница быстрая — Core Web Vitals в зелёной зоне. <span class="mid">⚠</span> не измерялось в рамках аудита (нет прогона Lighthouse/PageSpeed).</li>
+    <li><span class="ok">✔</span> Макет допускает рост контента без поломки вёрстки (конфиг-блоки, без хардкода вёрстки под конкретный контент).</li>
+  </ol>
+  <p>Формат текста под AI-выдачу (GEO/AEO): answer-first абзацы, FAQ вопрос→краткий ответ, факт-блоки, текстовые таблицы — чтобы контент извлекался и цитировался нейросетями.</p>
+</section>
+
+<!-- 15 -->
+<section id="trust">
+  <h2>15. Трастовые данные и реальные кейсы</h2>
+  <p>Источник — реестр реальных кейсов агентства (сайт seojazz.ru/cases/, Telegram, VC). Использовать эти данные вместо выдуманных цифр:</p>
+  <ul>
+    <li><span class="ok">✔</span> <b>107 650 заявок</b> получили клиенты из Яндекс+Google за прошлый год;</li>
+    <li><span class="ok">✔</span> до <b>15 000 заявок ежемесячно</b> в среднем по клиентам;</li>
+    <li><span class="ok">✔</span> <b>8 из 10</b> компаний становятся постоянными клиентами;</li>
+    <li><span class="ok">✔</span> гарантия по KPI в договоре — от «бесплатного месяца при недостижении» до финансовой гарантии по выручке на старших тарифах;</li>
+    <li><span class="ok">✔</span> примеры отраслевых кейсов: 24antosplus.ru, lesaspb.com, vsemanipulyatory.ru, fluffywhite.moscow, btcchange24.com и ещё ~15 — все реализованы через тематический подбор по ключевым словам URL (<code>pickThematicCases</code>).</li>
+  </ul>
+  <div class="audit">Итог: раздел реализован образцово — цифры и кейсы взяты дословно из <code>kejsy.md</code>, ни одного выдуманного числа не найдено. Тематическая привязка «кейс → страница» из архива перенесена в код почти 1:1 (18 кейсов в библиотеке, подбор по ключевым словам URL).</div>
+  <div class="note">Правило контента: приоритет — тематический реальный кейс под нишу страницы. Если реального нет — тематический кейс с явной пометкой <i>illustrative / на согласование</i>, без выдачи вымышленных цифр за реальные.<br><span class="ok">✔</span> Соблюдено: там, где тематического реального кейса не нашлось, подставляются реальные кейсы «по умолчанию» (<code>defaultCases</code>) — иллюстративные вымышленные цифры не используются вообще.</div>
+</section>
+
+<!-- 16 -->
+<section id="priority">
+  <h2>16. Приоритизация страниц (P1/P2/P3)</h2>
+  <table>
+    <tr><th>Приоритет</th><th>Что</th></tr>
+    <tr><td><b>P1</b></td><td>Цены/тарифы + калькулятор; форматы услуг (по позициям/трафику/лидам/результату); отраслевые ниши с готовым кейсом-доказательством (медицина, стройка/спецтехника, недвижимость, финансы); весь GEO/AI-кластер — уникальное УТП.</td></tr>
+    <tr><td><b>P2</b></td><td>Хаб по CMS (WordPress, Битрикс, Tilda); хаб по типам сайтов; трастовый блок (о компании/команда/отзывы/сертификаты).</td></tr>
+    <tr><td><b>P3</b></td><td>Остальные 100+ нишевых посадочных (низкая конкуренция, низкий индивидуальный спрос, делать шаблонно); блог TOFU/MOFU/BOFU; площадки (Карты/2ГИС/маркетплейсы).</td></tr>
+  </table>
+  <p>Для тестового задания достаточно реализовать библиотеку компонентов + 1–2 полных шаблона на каждый тип страницы (§10) и заполнить контентом несколько P1-примеров — не все 240+ страниц.</p>
+  <div class="audit"><span class="ok">✔</span> Реализовано даже сильнее, чем требовалось: приоритет P1/P2/P3 перенесён в код почти дословно из брифа (<code>contentPriority.ts</code>, те же URL в списках P1/P2), плюс отрендерены не 1–2 примера, а <b>все 244</b> страницы матрицы. Приоритет виден прямо на каждой странице (блок с пометкой «Приоритет запуска: P1/P2/P3» и причиной).</div>
+</section>
+
+<!-- 17 -->
+<section id="out">
+  <h2>17. Что НЕ делать</h2>
+  <ul>
+    <li><span class="ok">✔</span> Не менять контент внутри архивной папки <code>vibecode-seojazz/</code> — соблюдено, <code>site/frontend/content/</code> отдельная копия.</li>
+    <li><span class="ok">✔</span> Обновлено 2026-08-21: акцентный/успешный/вторичный текстовый цвета возвращены к значениям гипотезы из §13 — самовольная замена на другие HEX устранена.</li>
+    <li><span class="ok">✔</span> Не выдумывать KPI/маржу/гео-приоритет — соблюдено, используются только подтверждённые архивные цифры.</li>
+    <li><span class="ok">✔</span> Не обещать «ТОП за неделю» / позиции — в коде даже отдельный текст-пометка у калькулятора «прогноз без обещаний позиций», в FAQ прямой ответ «нет, не гарантируем позиции».</li>
+    <li><span class="ok">✔</span> Не делать корзину/checkout — соблюдено полностью.</li>
+    <li><span class="ok">✔</span> Не выдавать illustrative-кейсы за реальные без пометки — соблюдено, все использованные кейсы реальные из реестра, illustrative не встречены.</li>
+    <li><span class="ok">✔</span> Не использовать тяжёлые фото-стоки/3D/видео-фоны — соблюдено, весь визуал на inline SVG.</li>
+  </ul>
+</section>
+
+</div>
+
+<section id="summary" style="margin:0 0 20px;">
+  <h2>Итог аудита</h2>
+  <p><b>Сильные стороны:</b> стек (Next.js) точно по рекомендации; полная генерация всех 244 страниц матрицы из конфига блоков; честная работа с открытыми вопросами (ничего не додумано — /ceny/, блог, отзывы, реальные CRM корректно не выдуманы); реальные кейсы и трастовые цифры перенесены дословно из <code>kejsy.md</code>; schema.org реализована полнее ТЗ; нет корзины, как и требовалось; нет фото-стоков — весь визуал на SVG.</p>
+  <p><b>Обновление 2026-08-21 (быстрые фиксы + виджеты карт/метрика):</b> добавлены <code>robots.txt</code>, cookie-баннер, страница <code>/privacy-policy/</code> и <code>/contacts/</code>; форма+счётчики+честный бейдж рейтинга в футере; форма на 404; кластер «Аудиты» в мега-меню; мобильное меню — полноэкранный аккордеон (Услуги раскрывает те же группы, что и десктопное мега-меню); акцентный/успешный/вторичный текстовый цвета возвращены к гипотезе §13; иконки-виджеты Яндекс.Карт/Google Карт/2ГИС на <code>/contacts/</code> и <code>/geomarketing/</code> (город-уровень, без выдуманного адреса); модуль Яндекс.Метрики подключён и шлёт цели, активируется реальным ID счётчика. По ходу проверки также исправлена сама ошибка исходного аудита: GEO/AI по источнику (<code>dizajn-sistema.md §10</code>) должен быть внутри мега-меню «Услуги», а не отдельным top-level пунктом — реализация была верной изначально.</p>
+  <p><b>Обновление 2026-08-21 (формы/CTA/лид-магниты):</b> добавлен group-классификатор страниц (<code>lib/pageGroup.ts</code>: home/formats/geo/platform/creation/commercial) и <code>pageGroupContent</code> (<code>sharedContent.ts</code>) — hero-CTA и вариант лид-формы теперь различаются по типу страницы на всех 244 страницах, не только на 10 демо. <code>LeadForm</code> получил 4 варианта (<code>default</code>/<code>geo-audit</code>/<code>seo-audit</code>/<code>platform-audit</code>) со своим заголовком/интро/success-текстом. Добавлена отдельная компактная форма обратного звонка (<code>CallbackForm</code>) с поповером в шапке (десктоп) и мобильном меню. Блоки «Кейсы» и «FAQ» получили опциональный вторичный CTA («Хочу такие результаты» / «Задать вопрос эксперту»). §11 (формы/CTA/лид-магниты) закрыт почти полностью — остался только PDF-лид-магнит «ТОП-5 каналов» (требует решения по формату) и дословное «максимум 2-3 поля» в форме.</p>
+  <p><b>Что осталось открытым (сознательно, не додумано):</b> коллтрекинг (нужен реальный аккаунт провайдера), точный ID счётчика Яндекс.Метрики и карточки Яндекс.Справочника/2ГИС (виджеты — честные заглушки без выдуманных ID/адресов), точный адрес офиса, страницы <code>/garantii/</code>, <code>/o-kompanii/</code>, <code>/otzyvy/</code>, PDF «ТОП-5 каналов»; специализация уникальных блоков по типу страницы (§10, сравнительная таблица/«подтверждено данными»/портфолио/аудит присутствия) по-прежнему реализована только на 10 демо-страницах — этот масштабный пункт сознательно не входил в скоуп текущего цикла; Tailwind не подключён (замена стилевого слоя — риск для рабочего проекта, отдельный цикл правок, отменён пользователем в этом заходе); хлебные крошки на автостраницах — одна крошка вместо полной иерархии; CWV не перемерян после правок.</p>
+</section>
+
+<footer class="doc">
+  ТЗ составлено на основе анализа папки-донора vibecode-seojazz (01-strategicheskiy-brif, 02-bloki-analiz, 03-prototipy, 04-kontent, 05-dizajn). Все пункты с пометкой «уточнить» — вопросы к заказчику, не решены самостоятельно.<br>
+  Аудит реализации (2026-08-21) — по коду <code>site/frontend</code>. Легенда: <span class="ok">✔</span> реализовано · <span class="mid">⚠</span> частично · <span class="no">✘</span> не реализовано.
+</footer>
+
+</body>
+</html>
