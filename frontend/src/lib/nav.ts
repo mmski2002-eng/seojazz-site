@@ -86,5 +86,4 @@ export const mainNav: NavLink[] = [
   { label: "Вопросы", href: "/voprosy/", built: true },
   { label: "Кейсы", href: "/cases/", built: true },
   { label: "Блог", href: "/blog/", built: true },
-  { label: "Контакты", href: "/contacts/", built: true },
 ];

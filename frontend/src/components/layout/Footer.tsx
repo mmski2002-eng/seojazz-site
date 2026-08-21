@@ -49,6 +49,7 @@ export default function Footer() {
           <div className={styles.contacts}>
             <a href={contacts.phoneHref}>{contacts.phoneDisplay}</a>
             <a href={contacts.telegramHref}><TelegramIcon />{contacts.telegramHandle}</a>
+            <Link href="/contacts/">Все контакты и карты →</Link>
           </div>
           <FooterLeadForm />
         </div>

@@ -85,10 +85,11 @@ export default function Header() {
               type="button"
               className={styles.callbackTrigger}
               aria-expanded={callbackOpen}
+              aria-label="Обратный звонок"
+              title="Обратный звонок"
               onClick={() => setCallbackOpen((v) => !v)}
             >
-              <PhoneIncoming size={15} aria-hidden="true" />
-              Обратный звонок
+              <PhoneIncoming size={16} aria-hidden="true" />
             </button>
             {callbackOpen && (
               <div className={styles.callbackPopover}>
